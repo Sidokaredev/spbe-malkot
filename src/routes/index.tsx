@@ -1,6 +1,9 @@
 import { createBrowserRouter } from "react-router-dom"
-import prosesBisnisRoute from "./prosesBisnis"
 import HomePage from "../pages/page"
+import prosesBisnisRoute from "./domain-probis"
+import domainLayananRoute from "./domain-layanan"
+import domainDataRoute from "./domain-data"
+import domainAplikasiRoute from "./domain-aplikasi"
 
 const AppRouter = createBrowserRouter([
   {
@@ -10,7 +13,10 @@ const AppRouter = createBrowserRouter([
       // ...prosesBisnisRoute
     ]
   },
-  ...prosesBisnisRoute
+  ...prosesBisnisRoute,
+  ...domainLayananRoute,
+  ...domainDataRoute,
+  ...domainAplikasiRoute
 ], { basename: '/spbe-malkot/' })
 
 export default AppRouter

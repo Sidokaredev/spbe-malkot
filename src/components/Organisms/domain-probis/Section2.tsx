@@ -40,6 +40,7 @@ export default function ProsesBisnisSection2() {
         use_cell_pallete_on={1}
         use_pagination={true}
         use_row_number={true}
+        font_size="small"
       />
     </>
   )

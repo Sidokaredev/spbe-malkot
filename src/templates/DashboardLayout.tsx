@@ -14,12 +14,12 @@ export default function DashboardLayout({ children } : { children?: React.ReactN
       >
         {/* APP BAR */}
         <BaseAppBar />
-        <Grid container marginTop={"3em"}>
+        <Grid container marginTop={"3.5em"}>
           <Grid item
             className="scrollable-style"
             xs={2.5}
             sx={{
-              height: "93vh",
+              height: "95vh",
               padding: "0.8em 0.5em",
               overflowY: "scroll",
               position: "sticky",

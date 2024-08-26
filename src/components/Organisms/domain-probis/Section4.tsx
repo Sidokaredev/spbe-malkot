@@ -53,6 +53,7 @@ export default function ProsesBisnisSection4() {
         row_body_data={tableData}
         use_pagination={true}
         use_row_number={true}
+        font_size="small"
       />
     </>
   )

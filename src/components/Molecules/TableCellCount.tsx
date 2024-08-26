@@ -1,7 +1,15 @@
 import { TableCell } from "@mui/material"
 import { lightBlue } from "@mui/material/colors"
 
-export default function TableCellCount({ value } : { value: number }) {
+export default function TableCellCount({
+  value,
+  font_size = "medium",
+  cell_size = "medium",
+} : {
+  value: number,
+  font_size?: "xx-small" | "x-small" | "small" | "medium" | "large",
+  cell_size?: "medium" | "small"
+}) {
   const cellRules = [
     {
       rule: value >= 100,
@@ -36,10 +44,12 @@ export default function TableCellCount({ value } : { value: number }) {
   }
   return (
     <TableCell
+      size={cell_size}
       sx={{
         backgroundColor: rulesCecker(),
         border: "none",
-        cursor: "pointer"
+        cursor: "pointer",
+        fontSize: font_size
       }}
       onClick={() => console.info("probis cell clicked")}
     >

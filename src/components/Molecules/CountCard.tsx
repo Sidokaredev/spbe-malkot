@@ -23,7 +23,8 @@ export default function CountCard({
         sx={{
           background: gradient_color,
           borderRadius: "0.6em",
-          padding: "0.8em"
+          padding: "0.8em",
+          boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px"
         }}
       >
         <Box

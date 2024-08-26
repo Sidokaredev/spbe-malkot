@@ -1,14 +1,16 @@
 import { Box } from "@mui/material"
 import DashboardLayout from "../../templates/DashboardLayout"
-import ProsesBisnisSection1 from "../../components/Organisms/proses-bisnis/Section1"
-import ProsesBisnisSection4 from "../../components/Organisms/proses-bisnis/Section4"
-import ProsesBisnisSection2 from "../../components/Organisms/proses-bisnis/Section2"
-import ProsesBisnisSection3 from "../../components/Organisms/proses-bisnis/Section3"
+import ProsesBisnisSection1 from "../../components/Organisms/domain-probis/Section1"
+import ProsesBisnisSection4 from "../../components/Organisms/domain-probis/Section4"
+import ProsesBisnisSection2 from "../../components/Organisms/domain-probis/Section2"
+import ProsesBisnisSection3 from "../../components/Organisms/domain-probis/Section3"
 
-export default function ProsesBisnisPage() {
+export default function DomainProsesBisnis() {
   return (
     <DashboardLayout>
       <Box
+        component={"div"}
+        className="section-container"
       >
         <Box
           component={"section"}

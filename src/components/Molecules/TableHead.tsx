@@ -4,13 +4,16 @@ type TableHeadProps = {
   cells: string[]
   row_color?: string
   font_color?: string,
-  use_row_number?: boolean
+  use_row_number?: boolean,
+  font_size?: "xx-small" | "x-small" | "small" | "medium" | "large",
+  cell_size?: "medium" | "small"
 }
 
 export default function BaseTableHead(rowProps: TableHeadProps) {
   const cellStyles = {
     color: rowProps.font_color,
-    border: "none"
+    border: "none",
+    fontSize: rowProps.font_size
   }
   return (
     <TableRow
