@@ -1,7 +1,7 @@
 import { Box, Grid, Typography } from "@mui/material"
 import SankeyIcon from "/logos/domain-layanan/sankey-title.svg"
 import TableLabel from "/logos/probis-card/table-label.svg"
-import ApacheECharts from "../../Molecules/ApacheECharts"
+import ApacheECharts from "../../Molecules/Charts/ApacheECharts"
 import { EChartsOption } from "echarts"
 import { lightBlue } from "@mui/material/colors"
 import BaseTableSubheader, { TableSubheaderBodyData } from "../TableSubheader"
@@ -68,48 +68,6 @@ export default function DomainDataSection3() {
       }
     ]
   }
-  const row_body_data = [
-    {
-      data_pokok: "RAD.09 Informasi Pemerintahan",
-      data_tematik: "RAL.01.25 Kesehatan",
-      jumlah: 5
-    },
-    {
-      data_pokok: 2,
-      data_tematik: "RAL.01.25 Kependudukan",
-      jumlah: 4
-    },
-    {
-      data_pokok: 3,
-      data_tematik: "RAL.01.25 Sosial",
-      jumlah: 82
-    },
-    {
-      data_pokok: 4,
-      data_tematik: "RAL.01.25 Peternakan",
-      jumlah: 23
-    },
-    {
-      data_pokok: 5,
-      data_tematik: "RAL.01.25 Perumahan",
-      jumlah: 10  
-    },
-    {
-      data_pokok: 5,
-      data_tematik: "RAL.01.25 Perumahan",
-      jumlah: 10  
-    },
-    {
-      data_pokok: 5,
-      data_tematik: "RAL.01.25 Perumahan",
-      jumlah: 10  
-    },
-    {
-      data_pokok: 5,
-      data_tematik: "RAL.01.25 Perumahan",
-      jumlah: 10  
-    },
-  ]
 
   const data: TableSubheaderBodyData[] = [
     {

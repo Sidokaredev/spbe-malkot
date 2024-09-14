@@ -1,29 +1,32 @@
-import { Menu } from "@mui/icons-material"
-import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material"
-import { lightBlue } from "@mui/material/colors"
-import SPBE from "/logos/spbe 1.svg"
-import { useState } from "react"
-import BaseDrawer from "./Drawer"
+import { Menu } from "@mui/icons-material";
+import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
+import { lightBlue } from "@mui/material/colors";
+import SPBE from "/logos/spbe 1.svg";
+import React, { useState } from "react";
+import BaseDrawer from "./Drawer";
+
+export type BaseAppBarProps = {
+  children: React.ReactNode;
+};
 
 export default function BaseAppBar() {
   /* State */
-  const [openDrawer, setOpenDrawer] = useState<boolean>(false)
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   /* Handler */
   const toggleDrawer = () => {
-    setOpenDrawer((prev) => !prev)
-  }
+    setOpenDrawer((prev) => !prev);
+  };
   return (
     <>
       <AppBar
         sx={{
-          height: '3.5em',
-          position: 'fixed',
+          height: "3.5em",
+          position: "fixed",
           backgroundColor: lightBlue[900],
           flexDirection: "row",
-          alignItems: 'center',
+          alignItems: "center",
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          border: "1px solid black",
-          paddingX: "0.7em"
+          paddingX: "0.7em",
         }}
       >
         <Toolbar
@@ -32,7 +35,7 @@ export default function BaseAppBar() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
-            flexGrow: 1
+            flexGrow: 1,
           }}
         >
           <Box
@@ -40,21 +43,18 @@ export default function BaseAppBar() {
             sx={{
               display: "flex",
               alignItems: "center",
-              flexGrow: 1
+              flexGrow: 1,
             }}
           >
             <IconButton
               onClick={toggleDrawer}
               sx={{
-                marginRight: "0.3em"
+                marginRight: "0.3em",
               }}
             >
               <Menu sx={{ color: "white" }} />
             </IconButton>
-            <BaseDrawer
-              openDrawer={openDrawer}
-              setOpenDrawer={setOpenDrawer}
-            />
+            <BaseDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer} />
             <Typography>Arsitektur SPBE Kota Malang</Typography>
           </Box>
           <Box
@@ -74,14 +74,16 @@ export default function BaseAppBar() {
               src={SPBE}
               width={40}
               height={40}
-              sx={{
-                // backgroundColor: "white",
-                // padding: "0.5em"
-              }}
+              sx={
+                {
+                  // backgroundColor: "white",
+                  // padding: "0.5em"
+                }
+              }
             />
           </Box>
         </Toolbar>
       </AppBar>
     </>
-  )
+  );
 }

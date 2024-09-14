@@ -5,10 +5,60 @@ import DomainLayananSection2 from "../../components/Organisms/domain-layanan/Sec
 import DomainLayananSection3 from "../../components/Organisms/domain-layanan/Section3";
 import DomainLayananSection4 from "../../components/Organisms/domain-layanan/Section4";
 import DomainLayananSection5 from "../../components/Organisms/domain-layanan/Section5";
+import { ItemsListType } from "../../components/Molecules/ExpandableList";
+import { Apartment, Layers, Receipt, ViewColumn } from "@mui/icons-material";
 
 export default function DomainLayanan() {
+  const itemListLayanan: ItemsListType[] = [
+    {
+      id: 'opd',
+      list_label: "OPD",
+      sub_list: [
+        "Dinas Ketahanan Pangan dan Pertanian",
+        "Dinas Pengendalian Penduduk dan Keluarga Berencana",
+        "Dinas Kesehatan",
+        "Dinas Perpustakaan dan Kearsipan"
+      ],
+      icon: <Apartment />
+    },
+    {
+      id: 'sektor_pemerintahan',
+      list_label: "Target Layanan",
+      sub_list: [
+        "Items 1",
+        "Items 1",
+        "Items 1",
+        "Items 1",
+      ],
+      icon: <Layers />
+    },
+    {
+      id: 'urusan_pemerintahan',
+      list_label: "Sektor Pemerintahan",
+      sub_list: [
+        "Items 1",
+        "Items 1",
+        "Items 1",
+        "Items 1",
+      ],
+      icon: <ViewColumn />
+    },
+    {
+      id: 'sub_urusan',
+      list_label: "Urusan Pemerintahan",
+      sub_list: [
+        "Items 1",
+        "Items 1",
+        "Items 1",
+        "Items 1",
+      ],
+      icon: <Receipt />
+    },
+  ]
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      itemList={itemListLayanan}
+    >
       <Box
         component={"div"}
         className="section-container"

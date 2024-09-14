@@ -1,9 +1,13 @@
 import { Box, TextField, Typography } from "@mui/material"
-import ExpandableList from "../Molecules/ExpandableList"
+import ExpandableList, { ItemsListType } from "../Molecules/ExpandableList"
 import KotaMalang from "/logos/Logo_Kota_Malang.svg"
 import { useLocation } from "react-router-dom"
 
-export default function SideBarFilter() {
+export default function SideBarFilter({
+  itemList,
+} : {
+  itemList: ItemsListType[]
+}) {
   /* Router Hooks */
   const location = useLocation()
   /* Helpers */
@@ -44,7 +48,8 @@ export default function SideBarFilter() {
           sx={{
             display: "flex",
             alignItems: "center",
-            marginBottom: "1em",
+            marginTop: "0.3em",
+            marginBottom: "0.8em",
           }}
         >
           <Box>
@@ -83,7 +88,7 @@ export default function SideBarFilter() {
           autoComplete="off"
         />
         {/* Filters */}
-        <ExpandableList />
+        <ExpandableList itemList={itemList} />
       </Box>
     </>
   )

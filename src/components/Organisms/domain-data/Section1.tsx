@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material"
-import CountCard from "../../Molecules/CountCard"
+import CountCard from "../../Molecules/Cards/CountCard"
 import CountDomainDataCard from "/logos/domain-layanan/jumlah-layanan.svg"
-import CountCardChart from "../../Molecules/CountCardChart"
+import CountCardChart from "../../Molecules/Cards/CountCardChart"
 import { EChartsOption } from "echarts"
 
 export default function DomainDataSection1() {
@@ -133,6 +133,12 @@ export default function DomainDataSection1() {
         >
           <CountCardChart
             chartOptions={chartOptions}
+            progressBarTitle1={"RAL.01 Layanan Publik"}
+            progressBarTitle2={"RAL.02 Layanan Administrasi Pemerintahan"}
+            progressBarValue1={226}
+            progressBarValue2={76}
+            breakpointsChart={{ xs: 4 }}
+            breakpointsBar={{ xs: 8 }}
           />
         </Grid>
       </Grid>

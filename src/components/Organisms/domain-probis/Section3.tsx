@@ -1,7 +1,7 @@
 import { Box, Grid, Typography } from "@mui/material"
 import TableLabel from "/logos/probis-card/table-label.svg"
 import BaseTable from "../Table"
-import ApacheECharts from "../../Molecules/ApacheECharts"
+import ApacheECharts from "../../Molecules/Charts/ApacheECharts"
 
 
 export default function ProsesBisnisSection3() {

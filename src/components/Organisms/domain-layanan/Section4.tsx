@@ -1,5 +1,5 @@
 import { Box, Grid, List, ListItem, Typography } from "@mui/material";
-import ApacheECharts from "../../Molecules/ApacheECharts";
+import ApacheECharts from "../../Molecules/Charts/ApacheECharts";
 import { EChartsOption } from "echarts";
 import { blue, green, grey, lightBlue, orange, purple } from "@mui/material/colors";
 import CircleBullet from "../../Molecules/CircleBullet";

@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material"
 import JumlahProsesBisnis from "/logos/probis-card/jumlah-proses-bisnis-card.svg"
 import JumlahOPDPemilikProbis from "/logos/probis-card/jumlah-opd-pemilik-probis.svg"
-import CountCard from "../../Molecules/CountCard"
+import CountCard from "../../Molecules/Cards/CountCard"
 
 export default function ProsesBisnisSection1() {
   return (

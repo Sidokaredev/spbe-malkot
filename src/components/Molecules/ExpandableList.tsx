@@ -9,7 +9,7 @@ type ExpandableListType = {
   sub_urusan: boolean
 }
 
-type ItemsListType = {
+export type ItemsListType = {
   id: "opd" | "sektor_pemerintahan" | "urusan_pemerintahan" | "sub_urusan"
   list_label: string
   sub_list: string[]
@@ -63,7 +63,11 @@ const items: ItemsListType[] = [
   },
 ]
 
-export default function ExpandableList() {
+export default function ExpandableList({
+  itemList
+} : {
+  itemList: ItemsListType[]
+}) {
   const [expand, setExpand] = useState<ExpandableListType>({
     opd: true,
     sektor_pemerintahan: true,
@@ -78,7 +82,7 @@ export default function ExpandableList() {
   }
   return (
     <>
-      {items.map((item, index) => (
+      {itemList.map((item, index) => (
         <List
           key={index}
           disablePadding

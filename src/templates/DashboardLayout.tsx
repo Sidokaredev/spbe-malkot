@@ -2,8 +2,9 @@ import { Box, Grid } from "@mui/material";
 import React from "react";
 import BaseAppBar from "../components/Organisms/AppBar";
 import SideBarFilter from "../components/Organisms/SidebarFilter";
+import { ItemsListType } from "../components/Molecules/ExpandableList";
 
-export default function DashboardLayout({ children } : { children?: React.ReactNode }) {
+export default function DashboardLayout({ itemList, children } : { itemList: ItemsListType[], children?: React.ReactNode }) {
   return (
     <>
       <Box
@@ -23,11 +24,20 @@ export default function DashboardLayout({ children } : { children?: React.ReactN
               padding: "0.8em 0.5em",
               overflowY: "scroll",
               position: "sticky",
-              top: "3em"
+              top: "3em",
+              '&::-webkit-scrollbar': {
+                width: "0.7em"
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#c1c1c1",
+                "&:hover": {
+                  backgroundColor: "#9e9e9e",
+                }
+              }
             }}
           >
             {/* SIDEBAR FILTER */}
-            <SideBarFilter />
+            <SideBarFilter itemList={itemList} />
           </Grid>
           <Grid item
             xs={9.5}

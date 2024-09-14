@@ -3,7 +3,10 @@ import { RouteObject } from "react-router-dom"
 import Loading from "../pages/loading"
 
 const prosesBisnisPage: any = import.meta.glob("../pages/domain-probis/**/page.tsx")
-const prosesBisnisLoading: any = import.meta.glob("../pages/domain-probis/**/loading.tsx", { eager: true, import: 'default' })
+const prosesBisnisLoading: any = import.meta.glob("../pages/domain-probis/**/loading.tsx", {
+  eager: true,
+  import: 'default'
+})
 
 const prosesBisnisRoute: RouteObject[] = Object.keys(prosesBisnisPage).map((path) => {
   const ProsesBisnisComponent = React.lazy(prosesBisnisPage[path])

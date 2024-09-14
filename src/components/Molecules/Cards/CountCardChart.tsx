@@ -1,12 +1,36 @@
 import { Box, Grid, LinearProgress, Typography } from "@mui/material"
 import { EChartsOption } from "echarts"
-import ApacheECharts from "./ApacheECharts"
-import CircleBullet from "./CircleBullet"
+import ApacheECharts from "../Charts/ApacheECharts"
+import CircleBullet from "../CircleBullet"
 
 export default function CountCardChart({
   chartOptions,
+  progressBarTitle1,
+  progressBarTitle2,
+  progressBarValue1,
+  progressBarValue2,
+  breakpointsChart,
+  breakpointsBar,
 } : {
   chartOptions: EChartsOption
+  progressBarTitle1: string
+  progressBarTitle2: string
+  progressBarValue1: number
+  progressBarValue2: number,
+  breakpointsChart?: {
+    xs: number,
+    sm?: number,
+    md?: number,
+    lg?: number,
+    xl?: number
+  },
+  breakpointsBar?: {
+    xs: number,
+    sm?: number,
+    md?: number,
+    lg?: number,
+    xl?: number
+  }
 }) {
   return (
     <Grid container
@@ -20,7 +44,7 @@ export default function CountCardChart({
       }}
     >
       <Grid item
-        xs={4}
+        xs={breakpointsChart?.xs}
       >
         {/* Gauge Chart */}
         <Box
@@ -38,7 +62,7 @@ export default function CountCardChart({
         </Box>
       </Grid>
       <Grid item
-        xs={8}
+        xs={breakpointsBar?.xs}
         sx={{
           padding: "0.4em 1em",
         }}
@@ -62,8 +86,11 @@ export default function CountCardChart({
           <Typography
             variant="caption"
             color={"white"}
+            // sx={{
+            //   fontSize: "x-small"
+            // }}
           >
-            RAL.01 Layanan Publik
+            {progressBarTitle1}
           </Typography>
         </Box>
         <Box
@@ -77,8 +104,11 @@ export default function CountCardChart({
           <Typography
             variant="caption"
             color={"white"}
+            // sx={{
+            //   fontSize: "x-small"
+            // }}
           >
-            RAL.01 Layanan Administrasi Pemerintahan
+            {progressBarTitle2}
           </Typography>
         </Box>
         <Box
@@ -112,7 +142,7 @@ export default function CountCardChart({
               color: "white"
             }}
           >
-            226
+            {progressBarValue1}
           </Box>
         </Box>
         <Box
@@ -143,7 +173,7 @@ export default function CountCardChart({
               color: "white"
             }}
           >
-            74
+            {progressBarValue2}
           </Box>
         </Box>
       </Grid>

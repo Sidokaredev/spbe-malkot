@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import TableCellCount from "../Molecules/TableCellCount";
+import TableCellCount from "../Molecules/Tables/TableCellCount";
 import { lightBlue } from "@mui/material/colors";
 
 export type TableSubheaderBodyData = {

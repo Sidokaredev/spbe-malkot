@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import TableLabel from "/logos/probis-card/table-label.svg"
 import SankeyIcon from "/logos/domain-layanan/sankey-title.svg"
 import BaseTable from "../Table";
-import ApacheECharts from "../../Molecules/ApacheECharts";
+import ApacheECharts from "../../Molecules/Charts/ApacheECharts";
 import { EChartsOption } from "echarts";
 
 export default function DomainDataSection2() {
