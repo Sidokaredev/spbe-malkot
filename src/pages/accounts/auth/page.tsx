@@ -15,6 +15,7 @@ import {
   SelectChangeEvent,
   Snackbar,
   SnackbarCloseReason,
+  CircularProgress,
 } from "@mui/material";
 import AccountsLayout from "../../../templates/AccountsLayout";
 import { grey, lightBlue } from "@mui/material/colors";
@@ -41,6 +42,7 @@ export default function Auth() {
   });
   const [errors, setErrors] = useState<{ [key: string]: string[] }>();
   const [errorAuth, setErrorAuth] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   /* Form On-Change Handler */
   const selectOnChange = (event: SelectChangeEvent) => {
     setFormValue((prev) => ({ ...prev, instansi: String(event.target.value) }));
@@ -53,18 +55,22 @@ export default function Auth() {
   };
   /* Form On-Submit Handler */
   const formOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     // start code
     const validating = SignIn.safeParse(formValue);
     if (!validating?.success) {
+      setLoading(false);
       return setErrors(validating.error.flatten().fieldErrors);
     }
     setErrors(undefined);
     const request = await AuthApi(formValue);
     console.info(request);
     if (!request?.success && "message" in request) {
+      setLoading(false);
       return setErrorAuth(request.message);
     }
+    setLoading(false);
     Cookies.set("authToken", request.data as string, {
       expires: new Date(Date.now() + 1 * 60 * 60 * 1000),
     });
@@ -360,8 +366,13 @@ export default function Auth() {
                     variant="contained"
                     fullWidth
                     sx={{ textTransform: "none" }}
+                    disabled={loading}
                   >
-                    Sign In
+                    {loading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      "Sign In"
+                    )}
                   </Button>
                 </Box>
               </form>

@@ -1,4 +1,4 @@
-import { Params, redirect, useNavigate } from "react-router-dom";
+import { redirect } from "react-router-dom";
 import Cookies from "js-cookie";
 
 function AuthLoader() {
@@ -8,13 +8,7 @@ function AuthLoader() {
   return true;
 }
 
-function AuthenticatedUser({
-  request,
-  params,
-}: {
-  request: Request;
-  params: Params;
-}) {
+function AuthenticatedUser() {
   if (Cookies.get("authToken")) {
     throw redirect("/administrator");
   }

@@ -18,5 +18,4 @@ const administratorRoute: RouteObject[] = CreateDynamicRoute({
   loadingComponent: administratorLoading,
   loader: AuthLoader,
 });
-
 export default administratorRoute;

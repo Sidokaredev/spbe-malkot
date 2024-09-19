@@ -1,8 +1,8 @@
 import { Typography } from "@mui/material";
-import { Fetcher } from "../../../../services/request-helpers";
+import { FetcherWraped } from "../../services/request-helpers";
 import Cookies from "js-cookie";
 
-const indukRef = Fetcher("http://localhost:3000/api/v1/induk_refrensi", {
+const indukRef = FetcherWraped("http://localhost:3000/api/v1/induk_refrensi", {
   method: "GET",
   headers: {
     "Content-Type": "application/json",

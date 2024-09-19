@@ -1,6 +1,6 @@
 import { RouteObject } from "react-router-dom";
 import { CreateDynamicRoute } from "./helpers";
-import { AuthLoader, AuthenticatedUser } from "../loaders/auth-loader";
+import { AuthenticatedUser } from "../loaders/auth-loader";
 
 const accountsPage = import.meta.glob("../pages/accounts/**/page.tsx");
 const accountsLoading = import.meta.glob("../pages/accounts/**/loading.tsx", {

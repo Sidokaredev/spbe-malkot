@@ -3,16 +3,21 @@ import {
   AdminPanelSettings,
   BarChart,
   Domain,
+  Groups,
+  ManageAccounts,
   MiscellaneousServices,
   MoreVert,
   Security,
+  Settings,
   Widgets,
 } from "@mui/icons-material";
 import {
   AppBar,
   Avatar,
+  Backdrop,
   Box,
   Button,
+  CircularProgress,
   Divider,
   IconButton,
   List,
@@ -24,6 +29,7 @@ import {
   Menu,
   MenuList,
   Paper,
+  Skeleton,
   Toolbar,
   Tooltip,
   Typography,
@@ -31,9 +37,10 @@ import {
 } from "@mui/material";
 import { blue, grey, lightBlue } from "@mui/material/colors";
 import React, { useState } from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
-type ReferensiArsitektur = {
+type DrawerItemsProps = {
   icon: React.ReactElement;
   label: string;
   path: string;
@@ -47,6 +54,7 @@ export default function DashboardAdminLayout({
   /* State */
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
+  const [backdropShow, setBakcdropShow] = useState<boolean>(false);
   /* Handler */
   const menuTrigger = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -56,12 +64,13 @@ export default function DashboardAdminLayout({
   };
   /* Hooks */
   const location = useLocation();
+  const navigate = useNavigate();
   const MUITheme = useTheme();
   /* Helpers */
   const isCurrentPath = (path: string): boolean =>
     location.pathname === "/administrator" + path;
   /* Static Data */
-  const referensiArsitekturItems: ReferensiArsitektur[] = [
+  const referensiArsitekturItems: DrawerItemsProps[] = [
     {
       icon: <AccountTree />,
       label: "Arsitektur Bisnis",
@@ -93,6 +102,25 @@ export default function DashboardAdminLayout({
       path: "/r-arch/keamanan",
     },
   ];
+
+  const manajemenPenggunaItems: DrawerItemsProps[] = [
+    {
+      icon: <Groups />,
+      label: "Kelola Pengguna",
+      path: "/access-manage/users",
+    },
+  ];
+  /* Handler */
+  const logOut = () => {
+    setBakcdropShow(true);
+    setTimeout(() => {
+      setBakcdropShow(false);
+    }, 1500);
+    Cookies.remove("authToken");
+    setTimeout(() => {
+      navigate("/accounts/auth");
+    }, 1000);
+  };
   return (
     <Box component={"div"} sx={{ width: "100%" }}>
       {/* App Bar */}
@@ -118,7 +146,8 @@ export default function DashboardAdminLayout({
           <Box>
             <Tooltip title="account: vera.verina@erajaya.com">
               <IconButton onClick={menuTrigger}>
-                <MoreVert />
+                {/* <MoreVert /> */}
+                <ManageAccounts fontSize="small" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -139,25 +168,36 @@ export default function DashboardAdminLayout({
               }}
             >
               <Box>
-                <Typography variant="subtitle2" sx={{ lineHeight: "1em" }}>
-                  Vera Verina Erajaya
-                </Typography>
-                <Typography variant="caption" sx={{ lineHeight: "1em" }}>
-                  vera.verina@erajaya.com
-                </Typography>
+                <Skeleton>
+                  <Typography variant="subtitle2" sx={{ lineHeight: "1em" }}>
+                    Vera Verina Erajaya
+                  </Typography>
+                </Skeleton>
+                <Skeleton>
+                  <Typography variant="caption" sx={{ lineHeight: "1em" }}>
+                    vera.verina@erajaya.com
+                  </Typography>
+                </Skeleton>
               </Box>
               <Divider sx={{ marginY: "0.5em" }} />
               <Box sx={{ display: "flex", gap: "0 1em" }}>
-                <Button variant="text" size="small" fullWidth>
-                  Homepage
+                <Button
+                  component={RouterLink}
+                  to={"/domain-aplikasi"}
+                  variant="text"
+                  size="small"
+                  fullWidth
+                >
+                  Home
                 </Button>
                 <Button
                   variant="outlined"
                   size="small"
                   color="secondary"
                   fullWidth
+                  onClick={logOut}
                 >
-                  Sign out
+                  Keluar
                 </Button>
               </Box>
             </Menu>
@@ -246,12 +286,80 @@ export default function DashboardAdminLayout({
             ))}
           </List>
           {/* Role and Permissions */}
+          <List
+            disablePadding
+            component={"nav"}
+            subheader={
+              <ListSubheader
+                sx={{
+                  lineHeight: "0em",
+                  marginTop: "0.5em",
+                  // border: "1px solid black",
+                  paddingX: "1.7em",
+                }}
+              >
+                <Typography variant="caption">Manajemen Pengguna</Typography>
+              </ListSubheader>
+            }
+          >
+            {manajemenPenggunaItems.map((item, index) => (
+              <ListItem
+                key={index}
+                disablePadding
+                sx={{
+                  borderLeft: isCurrentPath(item.path)
+                    ? `0.3em solid ${lightBlue[700]}`
+                    : "0.3em solid transparent",
+                }}
+              >
+                <ListItemButton
+                  component={RouterLink}
+                  to={"/administrator" + item.path}
+                  sx={{
+                    color: isCurrentPath(item.path)
+                      ? lightBlue[700]
+                      : grey[600],
+                    backgroundColor: isCurrentPath(item.path)
+                      ? blue[50]
+                      : undefined,
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      border: "none",
+                      paddingLeft: "0.2em",
+                      paddingRight: "0.5em",
+                      color: isCurrentPath(item.path)
+                        ? lightBlue[700]
+                        : grey[600],
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle2" sx={{ fontWeight: 400 }}>
+                        {item.label}
+                      </Typography>
+                    }
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
         </Box>
         {/* Child Element */}
         <Box sx={{ borderLeft: "1px solid " + grey[400], flexGrow: 1 }}>
           {children}
         </Box>
       </Box>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={backdropShow}
+        // onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 }

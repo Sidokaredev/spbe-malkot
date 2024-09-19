@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { grey, lightBlue, red } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 
 export default function Request404() {
   return (

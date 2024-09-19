@@ -9,6 +9,7 @@ import petaRencanaRoute from "./peta-rencana";
 import administratorRoute from "./administrator";
 import Request404 from "../components/Organisms/Request404";
 import accountsRoute from "./accounts";
+import skeletonRoute from "./skeleton";
 
 const AppRouter = createBrowserRouter(
   [
@@ -35,6 +36,8 @@ const AppRouter = createBrowserRouter(
       path: "*",
       element: <Request404 />,
     },
+    /* Skeleton */
+    ...skeletonRoute,
   ],
   { basename: "/spbe-malkot/" }
 );

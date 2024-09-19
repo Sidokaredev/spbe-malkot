@@ -4,7 +4,9 @@ function WrapPromise(promise: Promise<any>) {
 
   const suspender = promise.then(
     (resolve) => {
-      status = "success";
+      setTimeout(() => {
+        status = "success";
+      }, 3000);
       response = resolve;
     },
     (reject) => {
@@ -27,7 +29,7 @@ function WrapPromise(promise: Promise<any>) {
   return { execute };
 }
 
-function Fetcher<ResponseType>(endpoint: string, init?: RequestInit) {
+function FetcherWraped<ResponseType>(endpoint: string, init?: RequestInit) {
   const promise = fetch(endpoint, init)
     .then((response) => {
       console.info("still awaiting response \t:", response);
@@ -40,4 +42,13 @@ function Fetcher<ResponseType>(endpoint: string, init?: RequestInit) {
   return WrapPromise(promise);
 }
 
-export { Fetcher };
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function Fetcher(endpoint: string, init?: RequestInit) {
+  let request: any = await fetch(endpoint, init);
+  request = await request.json();
+  await delay(1000);
+  return request;
+}
+
+export { FetcherWraped, Fetcher };
