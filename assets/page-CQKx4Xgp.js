@@ -1,0 +1,1 @@
+import{a3 as a,j as o,T as r}from"./index-DyErgHkj.js";import{a as i}from"./DashboardAdminLayout-BIdVf92w.js";import"./Skeleton-D3WzhggV.js";import"./dividerClasses-5Yj2gWGd.js";import"./Button-BwFa39Ev.js";function u(){const t=a();return o.jsx(i,{children:o.jsx(r,{component:"span",onClick:()=>t(-1),children:"go Auth"})})}export{u as default};

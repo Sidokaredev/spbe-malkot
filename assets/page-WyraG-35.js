@@ -1,1 +1,0 @@
-import{j as e}from"./index-CpGWNxNa.js";import{T as t}from"./TableBodyReferensiPenggunaSkeleton-_n7aQFnH.js";import"./TableRow-CrAhGf4e.js";import"./Skeleton-FVbYjgpo.js";function i(){return e.jsx(t,{})}export{i as default};

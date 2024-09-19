@@ -1,0 +1,1 @@
+import{j as e}from"./index-DyErgHkj.js";import{T as t}from"./TableBodyReferensiPenggunaSkeleton-Zv5b6-5r.js";import"./TableRow-CNuvr_lu.js";import"./Skeleton-D3WzhggV.js";function i(){return e.jsx(t,{})}export{i as default};
