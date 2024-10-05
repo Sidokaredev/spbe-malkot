@@ -8,14 +8,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import {
-  // Apartment,
-  // Layers,
-  // ViewColumn,
-  // Receipt,
-  ExpandLess,
-  ExpandMore,
-} from "@mui/icons-material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import React, { useState } from "react";
 
 type ExpandableListType = {

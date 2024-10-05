@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import DashboardAdminLayout from "../../templates/DashboardAdminLayout";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Administrator() {
   const navigate = useNavigate();

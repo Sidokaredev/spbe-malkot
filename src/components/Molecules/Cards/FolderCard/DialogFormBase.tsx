@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   InputBaseProps,
   ZodErrorsProps,
@@ -85,7 +85,7 @@ export default function DialogFormBase({
     setZodErrors({});
 
     const requestIndukReferensiCreate: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/induk_refrensi",
+      "http://localhost:3000/api/v1/induk_refrensi",
       {
         method: "POST",
         headers: {
@@ -98,24 +98,57 @@ export default function DialogFormBase({
         }),
       }
     );
-    console.info("Validated Data \t: ", validating.data);
+    console.info("request create \t:", requestIndukReferensiCreate);
     if (!requestIndukReferensiCreate.success) {
       setLoading(false);
-      console.info("request fail \t: ", requestIndukReferensiCreate);
       return setApiStatus(requestIndukReferensiCreate.message);
     }
 
     setLoading(false);
-    setFormValue({
-      nama: "",
-      kode: 0,
-    });
     setApiStatus("Berhasil menambahkan data");
     setTimeout(() => {
       setOpenDialog(false);
     }, 2000);
     return setDataAction((prev) => !prev);
   };
+
+  /* Fetch Data */
+  useEffect(() => {
+    const getIndukRefLength = async () => {
+      setLoading(true);
+      const requestIndukRefLength: any = await Fetcher(
+        "http://localhost:3000/api/v1/refrensi_arsitektur/" +
+          referensiArsitekturId +
+          "/induk", // REFERENSI ARSITEKRUR STILL STATIC
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + Cookies.get("authToken"),
+          },
+        }
+      );
+
+      if (!requestIndukRefLength.success) {
+        switch (requestIndukRefLength.statusCode) {
+          case 404:
+            setLoading(false);
+            return setFormValue((prev) => ({ ...prev, kode: 1 }));
+          default:
+            setLoading(false);
+            return setApiStatus(requestIndukRefLength.message);
+        }
+      }
+
+      setLoading(false);
+      setFormValue((prev) => ({
+        ...prev,
+        kode: requestIndukRefLength.data["Induk_Refrensi"].length + 1,
+      }));
+    };
+
+    getIndukRefLength();
+  }, []);
   return (
     <Dialog
       open={openDialog}
@@ -126,6 +159,7 @@ export default function DialogFormBase({
           minWidth: "25em",
         },
       }}
+      keepMounted={true}
     >
       <Box component={"div"} className="dialog-content-container">
         <Box
@@ -212,10 +246,15 @@ export default function DialogFormBase({
                 },
               }}
               sx={{ marginBottom: "0.75em" }}
-              value={formValue.kode}
+              value={"0" + formValue.kode}
+              disabled
               onChange={inputOnChange}
               error={Boolean(zodErrors?.kode)}
-              helperText={zodErrors && zodErrors["kode"]}
+              helperText={
+                zodErrors && zodErrors["kode"]
+                  ? zodErrors["kode"]
+                  : "Kode referensi dibuat secara otomatis"
+              }
             />
             <Divider orientation="horizontal" sx={{ marginY: "0.5em" }} />
             <Box sx={{ textAlign: "end", marginBottom: "0.75em" }}>
@@ -236,7 +275,7 @@ export default function DialogFormBase({
           </form>
           {/* Snackbar Notify */}
           <Snackbar
-            anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+            anchorOrigin={{ horizontal: "center", vertical: "top" }}
             open={apiStatus !== "" ? true : false}
             autoHideDuration={1500}
             message={apiStatus}

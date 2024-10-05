@@ -33,14 +33,16 @@ import {
   DeleteOutline,
   EditNoteOutlined,
   FilterList,
-  ImportExport,
   Inbox,
   Search,
 } from "@mui/icons-material";
 import MenuActionCreate from "../../../Molecules/Tables/Menus/MenuActionCreate";
 import MenuActionUpdate from "../../../Molecules/Tables/Menus/MenuActionUpdate";
 import { grey, lightBlue } from "@mui/material/colors";
-import TableBodyReferensiPenggunaSkeleton from "../../../Skeletons/TableBodyReferensiPenggunaSkeleton";
+import TableBodySkeleton from "../../../Skeletons/TableBodySkeleton";
+import DeleteConfirmation from "../../../Molecules/Cards/DeleteConfirmation";
+import ErrorFetchWrapper from "../../../Molecules/Errors/ErrorFetchWrapper";
+import ErrorPermission from "../../../Molecules/Errors/ErrorPermission";
 
 export default function ReferensiPenggunaData({
   dataReferensi,
@@ -68,10 +70,12 @@ export default function ReferensiPenggunaData({
     id: number;
     nama: string;
     kode: number;
+    status: string;
   }>({
     id: 0,
     nama: "",
     kode: 0,
+    status: "",
   });
   const [slicedRefPengguna, setSlicedRefPengguna] = useState<{
     slicedDataRef: ReferensiPenggunaProps[] | null;
@@ -94,6 +98,14 @@ export default function ReferensiPenggunaData({
   };
   const [apiStatus, setApiStatus] = useState<string>("");
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [onDelete, setOnDelete] = useState<{
+    status: boolean;
+    data: { id: number; name: string };
+  }>({ status: false, data: { id: 0, name: "" } });
+  const [errorFetch, setErrorFetch] = useState<{
+    status: boolean;
+    detail: string;
+  }>({ status: false, detail: "" });
   /* HANDLER */
   const selectItemsHandler = (refPath: string) => () => {
     setSelectItems((prev) => ({
@@ -132,13 +144,19 @@ export default function ReferensiPenggunaData({
       });
     };
   const updateDetailReferensiHandler =
-    (detailReferensiItem: { id: number; nama: string; kode: number }) =>
+    (detailReferensiItem: {
+      id: number;
+      nama: string;
+      kode: number;
+      status: string;
+    }) =>
     (event: React.MouseEvent<HTMLButtonElement>) => {
       setAnchorEl((prev) => ({ ...prev, update: event.currentTarget }));
       setDetailReferensiEdited({
         id: detailReferensiItem.id,
         nama: detailReferensiItem.nama,
         kode: detailReferensiItem.kode,
+        status: detailReferensiItem.status,
       });
     };
   const snackbarOnClose = (
@@ -151,29 +169,24 @@ export default function ReferensiPenggunaData({
 
     setApiStatus("");
   };
-  const deleteSingleItem =
-    (refPenggunaId: number, refPenggunaPath: string) => async () => {
-      setLoading((prev) => ({ ...prev, [refPenggunaPath]: true }));
-      const requestDeletionRefPengguna: any = await Fetcher(
-        "https://spbe-malkot.onrender.com/api/v1/refrensi_pengguna/" +
-          refPenggunaId,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + Cookies.get("authToken"),
-          },
-        }
-      );
-
-      if (!requestDeletionRefPengguna.success) {
-        setLoading((prev) => ({ ...prev, [refPenggunaPath]: false }));
-        return setApiStatus("Gagal menghapus data");
+  const deleteSingleItem = async (refPenggunaId: number) => {
+    const requestDeletionRefPengguna: any = await Fetcher(
+      "http://localhost:3000/api/v1/refrensi_pengguna/" + refPenggunaId,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + Cookies.get("authToken"),
+        },
       }
-      setLoading((prev) => ({ ...prev, [refPenggunaPath]: false }));
-      setApiStatus(requestDeletionRefPengguna.data);
-      setDataAction((prev) => !prev);
-    };
+    );
+
+    if (!requestDeletionRefPengguna.success) {
+      return setApiStatus("Gagal menghapus data");
+    }
+    setApiStatus(requestDeletionRefPengguna.data);
+    setDataAction((prev) => !prev);
+  };
   const deleteMultipleItem = (refPath: string) => async () => {
     setLoading((prev) => ({ ...prev, [refPath]: true }));
     const selectedItems: number[] = selectItems.listSelectedKey[refPath] ?? [];
@@ -185,8 +198,7 @@ export default function ReferensiPenggunaData({
 
     selectedItems.forEach((refPenggunaId: number) => {
       const request = Fetcher(
-        "https://spbe-malkot.onrender.com/api/v1/refrensi_pengguna/" +
-          refPenggunaId,
+        "http://localhost:3000/api/v1/refrensi_pengguna/" + refPenggunaId,
         {
           method: "DELETE",
           headers: {
@@ -234,7 +246,7 @@ export default function ReferensiPenggunaData({
   useEffect(() => {
     const getReferensiPengguna = async (detailRefId: number) => {
       const requestReferensiPenggunaData: any = await Fetcher(
-        "https://spbe-malkot.onrender.com/api/v1/refrensi_detail/" +
+        "http://localhost:3000/api/v1/refrensi_detail/" +
           detailRefId +
           "/pengguna",
         {
@@ -245,7 +257,12 @@ export default function ReferensiPenggunaData({
           },
         }
       );
-      console.log(requestReferensiPenggunaData.data["Refrensi_Pengguna"]);
+      if (!requestReferensiPenggunaData.success) {
+        return setErrorFetch({
+          status: true,
+          detail: requestReferensiPenggunaData.message,
+        });
+      }
       const dataReferensiPengguna: ReferensiPenggunaProps[] =
         requestReferensiPenggunaData.data[
           "Refrensi_Pengguna"
@@ -264,113 +281,359 @@ export default function ReferensiPenggunaData({
   const detailRefPath = `${dataReferensi.detailReferensi.nama}#${dataReferensi.detailReferensi.kode}`;
   return (
     <Box sx={{ marginLeft: "9em", marginTop: "1em" }}>
-      <Box
-        component={"div"}
-        className="table-filtering-panel"
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginTop: "0.5em",
-          marginBottom: "1em",
-        }}
+      <ErrorFetchWrapper
+        errorFetch={errorFetch}
+        ErrorElement={<ErrorPermission errorDetail={errorFetch.detail} />}
       >
-        {/* Filtering Table */}
-        <Box sx={{ display: "flex", gap: "1em" }}>
-          <Button
-            variant={selectItems.selected[detailRefPath] ? "contained" : "text"}
-            size="small"
-            sx={{ textTransform: "none" }}
-            onClick={selectItemsHandler(detailRefPath)}
-            color={selectItems.selected[detailRefPath] ? "error" : undefined}
+        <Box component={"div"}>
+          <Box
+            component={"div"}
+            className="table-filtering-panel"
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: "0.5em",
+              marginBottom: "1em",
+            }}
           >
-            {selectItems.selected[detailRefPath] ? "Cancel" : "Select items"}
-          </Button>
-          {selectItems.selected[detailRefPath] && (
-            <Box>
-              <Typography
-                variant="caption"
+            {/* Filtering Table */}
+            <Box sx={{ display: "flex", gap: "1em" }}>
+              <Button
+                variant={
+                  selectItems.selected[detailRefPath] ? "contained" : "text"
+                }
+                size="small"
+                sx={{ textTransform: "none" }}
+                onClick={selectItemsHandler(detailRefPath)}
+                color={
+                  selectItems.selected[detailRefPath] ? "error" : undefined
+                }
+              >
+                {selectItems.selected[detailRefPath]
+                  ? "Cancel"
+                  : "Select items"}
+              </Button>
+              {selectItems.selected[detailRefPath] && (
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      marginX: "1em",
+                      fontWeight: "normal",
+                      cursor: "not-allowed",
+                      color: grey[700],
+                    }}
+                  >
+                    {`${selectItems.count[detailRefPath] ?? 0} Selected`}
+                  </Typography>
+                  <Button
+                    color="error"
+                    sx={{ textTransform: "none" }}
+                    disabled={loading[detailRefPath]}
+                    onClick={deleteMultipleItem(detailRefPath)}
+                  >
+                    {loading[detailRefPath] ? (
+                      <CircularProgress size={20} sx={{ color: "red" }} />
+                    ) : (
+                      "Delete"
+                    )}
+                  </Button>
+                </Box>
+              )}
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0em 0.5em",
+              }}
+            >
+              <TextField
+                type="text"
+                name="search"
+                placeholder="Search..."
+                size="small"
+                autoComplete="off"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  sx: {
+                    fontSize: "0.6em",
+                    "& .MuiInputBase-input::placeholder": {
+                      fontSize: "1.25em",
+                    },
+                  },
+                }}
+                sx={{ minWidth: "16em" }}
+              />
+              <Button
+                variant="outlined"
+                size="small"
+                color="secondary"
+                startIcon={<FilterList fontSize="small" />}
                 sx={{
-                  marginX: "1em",
-                  fontWeight: "normal",
-                  cursor: "not-allowed",
-                  color: grey[700],
+                  textTransform: "none",
                 }}
               >
-                {`${selectItems.count[detailRefPath] ?? 0} Selected`}
-              </Typography>
+                Search by
+              </Button>
               <Button
-                color="error"
-                sx={{ textTransform: "none" }}
-                disabled={loading[detailRefPath]}
-                onClick={deleteMultipleItem(detailRefPath)}
+                variant="contained"
+                startIcon={<Add fontSize="small" />}
+                size="small"
+                sx={{
+                  textTransform: "none",
+                }}
+                onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                  setAnchorEl((prev) => ({
+                    ...prev,
+                    create: event.currentTarget,
+                  }));
+                }}
               >
-                {loading[detailRefPath] ? (
-                  <CircularProgress size={20} sx={{ color: "red" }} />
-                ) : (
-                  "Delete"
-                )}
+                New
               </Button>
             </Box>
-          )}
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0em 0.5em",
-          }}
-        >
-          <TextField
-            type="text"
-            name="search"
-            placeholder="Search..."
-            size="small"
-            autoComplete="off"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search fontSize="small" />
-                </InputAdornment>
-              ),
-              sx: {
-                fontSize: "0.6em",
-                "& .MuiInputBase-input::placeholder": {
-                  fontSize: "1.25em",
-                },
-              },
-            }}
-            sx={{ minWidth: "16em" }}
-          />
-          <Button
-            variant="outlined"
-            size="small"
-            color="secondary"
-            startIcon={<FilterList fontSize="small" />}
+          </Box>
+          {/* Table */}
+          <TableContainer
             sx={{
-              textTransform: "none",
+              border: "1px solid " + grey[300],
+              borderRadius: "0.3em",
             }}
           >
-            Search by
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<Add fontSize="small" />}
-            size="small"
-            sx={{
-              textTransform: "none",
-            }}
-            onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-              setAnchorEl((prev) => ({ ...prev, create: event.currentTarget }));
-            }}
-          >
-            New
-          </Button>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      paddingY: "0.7em",
+                      letterSpacing: "0.1em",
+                      backgroundColor: grey[300],
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ color: grey[700] }}>
+                      {selectItems.selected[detailRefPath] ? "" : "NO"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      paddingY: "0.7em",
+                      letterSpacing: "0.1em",
+                      backgroundColor: grey[300],
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ color: grey[700] }}>
+                      NAME
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      paddingY: "0.7em",
+                      letterSpacing: "0.1em",
+                      backgroundColor: grey[300],
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ color: grey[700] }}>
+                      KODE
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      paddingY: "0.7em",
+                      letterSpacing: "0.1em",
+                      backgroundColor: grey[300],
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0em 0.3em",
+                      }}
+                    >
+                      <Typography variant="subtitle2" sx={{ color: grey[700] }}>
+                        STATUS
+                        <Typography component={"span"} variant="caption">
+                          (As-Is/To-Be)
+                        </Typography>
+                      </Typography>
+                      {/* <IconButton size="small">
+                    <ImportExport fontSize="small" />
+                  </IconButton> */}
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      paddingY: "0.7em",
+                      letterSpacing: "0.1em",
+                      backgroundColor: grey[300],
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ color: grey[700] }}>
+                      ACTION
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {slicedRefPengguna.slicedDataRef ? (
+                  slicedRefPengguna.slicedDataRef.length > 0 ? (
+                    slicedRefPengguna.slicedDataRef.map(
+                      (refPengguna, refPenggunaIndex) => {
+                        const refPenggunaPath = `${refPengguna.nama}#${refPenggunaIndex}`;
+                        return (
+                          <TableRow
+                            key={refPenggunaIndex}
+                            sx={{
+                              "&:hover": {
+                                backgroundColor: grey[200],
+                              },
+                            }}
+                          >
+                            <TableCell sx={{ paddingY: "0.7em" }}>
+                              {selectItems.selected[detailRefPath] ? (
+                                <Checkbox
+                                  size="small"
+                                  checked={
+                                    checkboxState[refPenggunaPath] ?? false
+                                  }
+                                  value={refPengguna.id}
+                                  onChange={selectedItemsKeyHandler(
+                                    refPenggunaPath,
+                                    detailRefPath
+                                  )}
+                                  sx={{ padding: 0 }}
+                                />
+                              ) : (
+                                slicedRefPengguna.currentPage * 5 +
+                                (refPenggunaIndex + 1)
+                              )}
+                            </TableCell>
+                            <TableCell sx={{ paddingY: "0.7em" }}>
+                              {refPengguna.nama}
+                            </TableCell>
+                            <TableCell sx={{ paddingY: "0.7em" }}>
+                              {refPengguna.kode}
+                            </TableCell>
+                            <TableCell sx={{ paddingY: "0.7em" }}>
+                              {refPengguna.status}
+                            </TableCell>
+                            <TableCell sx={{ paddingY: "0.7em" }}>
+                              <Box sx={{ display: "flex" }}>
+                                <Tooltip
+                                  title="Ubah data"
+                                  placement="left-start"
+                                >
+                                  <IconButton
+                                    size="small"
+                                    sx={{
+                                      padding: "0.3em",
+                                    }}
+                                    onClick={updateDetailReferensiHandler({
+                                      id: refPengguna.id,
+                                      nama: refPengguna.nama,
+                                      kode: refPengguna.kode,
+                                      status: refPengguna.status,
+                                    })}
+                                  >
+                                    <EditNoteOutlined
+                                      fontSize="small"
+                                      sx={{
+                                        color: lightBlue[700],
+                                      }}
+                                    />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Delete" placement="right-start">
+                                  <IconButton
+                                    size="small"
+                                    sx={{
+                                      padding: "0.3em",
+                                    }}
+                                    onClick={() => {
+                                      setOnDelete({
+                                        status: true,
+                                        data: {
+                                          id: refPengguna.id,
+                                          name: refPengguna.nama,
+                                        },
+                                      });
+                                    }}
+                                  >
+                                    <DeleteOutline fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      }
+                    )
+                  ) : (
+                    <TableRow>
+                      <TableCell size="small">
+                        <Alert
+                          severity="warning"
+                          icon={
+                            <Inbox fontSize="small" sx={{ color: grey[700] }} />
+                          }
+                          sx={{
+                            fontSize: "small",
+                            backgroundColor: "transparent",
+                            fontWeight: 550,
+                            fontStyle: "italic",
+                          }}
+                        >
+                          No records found
+                        </Alert>
+                      </TableCell>
+                    </TableRow>
+                  )
+                ) : (
+                  <TableBodySkeleton
+                    skeletonCells={[
+                      { size: "vshort" },
+                      { size: "vlong" },
+                      { size: "short" },
+                      { size: "medium" },
+                      { size: "medium" },
+                    ]}
+                  />
+                )}
+              </TableBody>
+            </Table>
+            <TablePagination
+              component={"div"}
+              count={referensiPengguna ? referensiPengguna.length : 0}
+              onPageChange={(_: unknown, newPage: number) => {
+                slicerData(
+                  referensiPengguna as ReferensiPenggunaProps[],
+                  newPage
+                );
+              }}
+              page={slicedRefPengguna ? slicedRefPengguna.currentPage : 0}
+              rowsPerPage={5}
+              rowsPerPageOptions={[5, 10]}
+            />
+          </TableContainer>
         </Box>
-      </Box>
+      </ErrorFetchWrapper>
+      {/* Delete Confirmation */}
+      {onDelete.status && (
+        <DeleteConfirmation
+          onDelete={onDelete}
+          setOnDelete={setOnDelete}
+          deleteHandler={deleteSingleItem}
+        />
+      )}
       {/* Snackbar Notify */}
       <Snackbar
-        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
         open={Boolean(apiStatus)}
         message={apiStatus}
         autoHideDuration={1500}
@@ -403,212 +666,6 @@ export default function ReferensiPenggunaData({
           setDataAction={setDataAction}
         />
       )}
-      {/* Table */}
-      <TableContainer
-        sx={{
-          border: "1px solid " + grey[300],
-          borderRadius: "0.3em",
-        }}
-      >
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                sx={{
-                  paddingY: "0.7em",
-                  letterSpacing: "0.1em",
-                  backgroundColor: grey[300],
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ color: grey[700] }}>
-                  {selectItems.selected[detailRefPath] ? "" : "NO"}
-                </Typography>
-              </TableCell>
-              <TableCell
-                sx={{
-                  paddingY: "0.7em",
-                  letterSpacing: "0.1em",
-                  backgroundColor: grey[300],
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ color: grey[700] }}>
-                  NAME
-                </Typography>
-              </TableCell>
-              <TableCell
-                sx={{
-                  paddingY: "0.7em",
-                  letterSpacing: "0.1em",
-                  backgroundColor: grey[300],
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ color: grey[700] }}>
-                  KODE
-                </Typography>
-              </TableCell>
-              <TableCell
-                sx={{
-                  paddingY: "0.7em",
-                  letterSpacing: "0.1em",
-                  backgroundColor: grey[300],
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0em 0.3em",
-                  }}
-                >
-                  <Typography variant="subtitle2" sx={{ color: grey[700] }}>
-                    LEVEL
-                  </Typography>
-                  <IconButton size="small">
-                    <ImportExport fontSize="small" />
-                  </IconButton>
-                </Box>
-              </TableCell>
-              <TableCell
-                sx={{
-                  paddingY: "0.7em",
-                  letterSpacing: "0.1em",
-                  backgroundColor: grey[300],
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ color: grey[700] }}>
-                  ACTION
-                </Typography>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {slicedRefPengguna.slicedDataRef ? (
-              slicedRefPengguna.slicedDataRef.length > 0 ? (
-                slicedRefPengguna.slicedDataRef.map(
-                  (refPengguna, refPenggunaIndex) => {
-                    const refPenggunaPath = `${refPengguna.nama}#${refPenggunaIndex}`;
-                    return (
-                      <TableRow
-                        key={refPenggunaIndex}
-                        sx={{
-                          "&:hover": {
-                            backgroundColor: grey[200],
-                          },
-                        }}
-                      >
-                        <TableCell sx={{ paddingY: "0.7em" }}>
-                          {selectItems.selected[detailRefPath] ? (
-                            <Checkbox
-                              size="small"
-                              checked={checkboxState[refPenggunaPath] ?? false}
-                              value={refPengguna.id}
-                              onChange={selectedItemsKeyHandler(
-                                refPenggunaPath,
-                                detailRefPath
-                              )}
-                              sx={{ padding: 0 }}
-                            />
-                          ) : (
-                            slicedRefPengguna.currentPage * 5 +
-                            (refPenggunaIndex + 1)
-                          )}
-                        </TableCell>
-                        <TableCell sx={{ paddingY: "0.7em" }}>
-                          {refPengguna.nama}
-                        </TableCell>
-                        <TableCell sx={{ paddingY: "0.7em" }}>
-                          {refPengguna.kode}
-                        </TableCell>
-                        <TableCell sx={{ paddingY: "0.7em" }}>
-                          {/* {refPengguna.level} */}
-                          level tidak tersedia di API
-                        </TableCell>
-                        <TableCell sx={{ paddingY: "0.7em" }}>
-                          <Box sx={{ display: "flex" }}>
-                            <Tooltip title="Ubah data" placement="left-start">
-                              <IconButton
-                                size="small"
-                                sx={{
-                                  padding: "0.3em",
-                                }}
-                                onClick={updateDetailReferensiHandler({
-                                  id: refPengguna.id,
-                                  nama: refPengguna.nama,
-                                  kode: refPengguna.kode,
-                                })}
-                              >
-                                <EditNoteOutlined
-                                  fontSize="small"
-                                  sx={{
-                                    color: lightBlue[700],
-                                  }}
-                                />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Delete" placement="right-start">
-                              <IconButton
-                                size="small"
-                                sx={{
-                                  padding: "0.3em",
-                                }}
-                                disabled={loading[refPenggunaPath]}
-                                onClick={deleteSingleItem(
-                                  refPengguna.id,
-                                  refPenggunaPath
-                                )}
-                              >
-                                {loading[refPenggunaPath] ? (
-                                  <CircularProgress
-                                    size={20}
-                                    sx={{ color: grey[600] }}
-                                  />
-                                ) : (
-                                  <DeleteOutline fontSize="small" />
-                                )}
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  }
-                )
-              ) : (
-                <TableRow>
-                  <TableCell size="small">
-                    <Alert
-                      severity="warning"
-                      icon={
-                        <Inbox fontSize="small" sx={{ color: grey[700] }} />
-                      }
-                      sx={{
-                        fontSize: "small",
-                        backgroundColor: "transparent",
-                        fontWeight: 550,
-                        fontStyle: "italic",
-                      }}
-                    >
-                      No records found
-                    </Alert>
-                  </TableCell>
-                </TableRow>
-              )
-            ) : (
-              <TableBodyReferensiPenggunaSkeleton />
-            )}
-          </TableBody>
-        </Table>
-        <TablePagination
-          component={"div"}
-          count={referensiPengguna ? referensiPengguna.length : 0}
-          onPageChange={(_: unknown, newPage: number) => {
-            slicerData(referensiPengguna as ReferensiPenggunaProps[], newPage);
-          }}
-          page={slicedRefPengguna ? slicedRefPengguna.currentPage : 0}
-          rowsPerPage={5}
-          rowsPerPageOptions={[5, 10]}
-        />
-      </TableContainer>
     </Box>
   );
 }

@@ -1,4 +1,4 @@
-import { Close, EditCalendar, NoteAdd } from "@mui/icons-material";
+import { Close, NoteAdd } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -8,7 +8,9 @@ import {
   InputLabel,
   Menu,
   MenuItem,
+  Popover,
   Select,
+  SelectChangeEvent,
   Slide,
   Snackbar,
   SnackbarCloseReason,
@@ -17,13 +19,10 @@ import {
   Typography,
 } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
-import {
-  CreateReferensiPengguna,
-  UpdateReferensiPengguna,
-} from "../../../../services/validations";
+import { CreateReferensiPengguna } from "../../../../services/validations";
 import {
   DetailReferensiProps,
   IndukReferensiProps,
@@ -34,6 +33,7 @@ import {
 /* Type */
 type CreateReferensiPenggunaForm = {
   nama: string;
+  status: string;
   kode: number;
 };
 
@@ -50,16 +50,12 @@ interface BaseMenuActionProps {
     indukReferensi: IndukReferensiProps;
     subReferensi: SubReferensiProps;
     detailReferensi: DetailReferensiProps;
-    // indukReferensi: string;
-    // subReferensi: string;
-    // detailReferensi: string;
-    // detailRefId: number;
   };
   setDataAction: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /* Additional Component */
-const SlideTransition: React.FC<any> = React.forwardRef(
+export const SlideTransition: React.FC<any> = React.forwardRef(
   function SlideTransition(props, ref) {
     return (
       <Slide
@@ -78,6 +74,7 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
   /* State */
   const [formValue, setFormValue] = useState<CreateReferensiPenggunaForm>({
     nama: "",
+    status: "",
     kode: 0,
   });
   const [zodErrors, setZodErrors] = useState<{ [key: string]: string[] }>();
@@ -96,6 +93,9 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
       [event.target.name]:
         event.target.name === "kode" ? value : event.target.value,
     }));
+  };
+  const selectOnChange = (event: SelectChangeEvent<string>) => {
+    setFormValue((prev) => ({ ...prev, status: event.target.value }));
   };
   const snackbarOnClose = (
     _: React.SyntheticEvent | Event,
@@ -124,7 +124,7 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
     }
     setZodErrors({});
     const requestCreateDetailReferensi: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/refrensi_pengguna",
+      "http://localhost:3000/api/v1/refrensi_pengguna",
       {
         method: "POST",
         headers: {
@@ -145,6 +145,7 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
 
     setFormValue({
       nama: "",
+      status: "",
       kode: 0,
     });
     setLoading(false);
@@ -156,15 +157,23 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
   };
 
   return (
-    <Menu
+    <Popover
       anchorEl={anchorEl}
+      anchorOrigin={{
+        horizontal: "right",
+        vertical: "bottom",
+      }}
+      transformOrigin={{
+        horizontal: "right",
+        vertical: "top",
+      }}
       open={menuOpen}
       TransitionComponent={SlideTransition}
       slotProps={{
         paper: {
           sx: {
             minWidth: "30em",
-            paddingX: "1em",
+            padding: "1em",
             borderRadius: "0.3em 0em 0em 0.3em",
             boxShadow:
               "rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
@@ -236,7 +245,8 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
                 color: grey[800],
               }}
             >
-              Induk Referensi
+              {/* Induk Referensi */}
+              Level 1
             </Typography>
             <Typography
               sx={{
@@ -260,7 +270,8 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
                 color: grey[800],
               }}
             >
-              Sub Referensi
+              {/* Sub Referensi */}
+              Level 2
             </Typography>
             <Typography
               sx={{
@@ -284,7 +295,8 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
                 color: grey[800],
               }}
             >
-              Detail Referensi
+              {/* Detail Referensi */}
+              Level 3
             </Typography>
             <Typography
               sx={{
@@ -327,7 +339,7 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
         </Box>
         {/* Snackbar */}
         <Snackbar
-          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+          anchorOrigin={{ horizontal: "center", vertical: "top" }}
           open={apiStatus !== "" ? true : false}
           autoHideDuration={1500}
           message={apiStatus}
@@ -362,12 +374,43 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
               error={zodErrors && zodErrors["nama"] ? true : false}
               helperText={zodErrors && zodErrors["nama"]}
             />
+            <FormControl fullWidth size="small" sx={{ marginBottom: "0.75em" }}>
+              <InputLabel id="status" sx={{ fontSize: "small" }}>
+                Status
+              </InputLabel>
+              <Select
+                name="status"
+                labelId="status"
+                id="status"
+                label="Status"
+                MenuProps={{
+                  slotProps: {
+                    paper: {
+                      sx: {
+                        fontSize: "small",
+                      },
+                    },
+                  },
+                }}
+                sx={{ fontSize: "small" }}
+                value={formValue.status}
+                onChange={selectOnChange}
+              >
+                <MenuItem value={"AS_IS"} sx={{ fontSize: "small" }}>
+                  As-Is
+                </MenuItem>
+                <MenuItem value={"TO_BE"} sx={{ fontSize: "small" }}>
+                  To-Be
+                </MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               name="kode"
               type="text"
               label="Kode"
               placeholder={"Masukkan kode item referensi"}
               size="small"
+              autoComplete="off"
               fullWidth
               InputProps={{
                 sx: {
@@ -457,6 +500,6 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
           </form>
         </Box>
       </Box>
-    </Menu>
+    </Popover>
   );
 }

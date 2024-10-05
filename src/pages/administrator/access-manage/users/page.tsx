@@ -33,9 +33,12 @@ import { useEffect, useState } from "react";
 import { UserProps } from "../types.declaration";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
-import TableBodyReferensiPenggunaSkeleton from "../../../../components/Skeletons/TableBodyReferensiPenggunaSkeleton";
 import DialogFormRegisterOnUpdate from "../../../../components/Organisms/access-manage/users/DialogFormRegisterOnUpdate";
 import DialogFormRegisterOnCreate from "../../../../components/Organisms/access-manage/users/DialogFormRegisterOnCreate";
+import TableBodySkeleton from "../../../../components/Skeletons/TableBodySkeleton";
+import ErrorFetchWrapper from "../../../../components/Molecules/Errors/ErrorFetchWrapper";
+import DeleteConfirmation from "../../../../components/Molecules/Cards/DeleteConfirmation";
+import ErrorPermission from "../../../../components/Molecules/Errors/ErrorPermission";
 
 export default function ManageUsers() {
   /* State */
@@ -55,7 +58,14 @@ export default function ManageUsers() {
     no_telpon: "",
   });
   const [apiStatus, setApiStatus] = useState<string>("");
-  const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [errorFetch, setErrorFetch] = useState<{
+    status: boolean;
+    detail: string;
+  }>({ status: false, detail: "" });
+  const [onDelete, setOnDelete] = useState<{
+    status: boolean;
+    data: { id: number; name: string };
+  }>({ status: false, data: { id: 0, name: "" } });
   /* Handler */
   const snackbarOnClose = (
     _: React.SyntheticEvent | Event,
@@ -67,10 +77,9 @@ export default function ManageUsers() {
 
     setApiStatus("");
   };
-  const deletePengguna = (userId: number, itemPath: string) => async () => {
-    setLoading((prev) => ({ ...prev, [itemPath]: true }));
+  const deletePengguna = async (userId: number) => {
     const requestDeletePengguna: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/user/" + userId,
+      "http://localhost:3000/api/v1/user/" + userId,
       {
         method: "DELETE",
         headers: {
@@ -80,19 +89,17 @@ export default function ManageUsers() {
       }
     );
     if (!requestDeletePengguna.success) {
-      setLoading((prev) => ({ ...prev, [itemPath]: false }));
       return setApiStatus(requestDeletePengguna.message);
     }
 
     setDataAction((prev) => !prev);
-    setLoading((prev) => ({ ...prev, [itemPath]: false }));
     return setApiStatus("Berhasil menghapus data");
   };
   /* Hooks */
   useEffect(() => {
     const getUsers = async () => {
       const requestUsersData = await Fetcher(
-        "https://spbe-malkot.onrender.com/api/v1/user",
+        "http://localhost:3000/api/v1/user",
         {
           method: "GET",
           headers: {
@@ -101,6 +108,12 @@ export default function ManageUsers() {
           },
         }
       );
+      if (!requestUsersData.success) {
+        return setErrorFetch({
+          status: true,
+          detail: requestUsersData.message,
+        });
+      }
       setUsers(requestUsersData.data as UserProps[]);
     };
 
@@ -173,245 +186,251 @@ export default function ManageUsers() {
             </Button>
           </Box>
         </Box>
-        <TableContainer
-          sx={{
-            border: "1px solid " + grey[300],
-            borderRadius: "0.3em",
-          }}
+        <ErrorFetchWrapper
+          errorFetch={errorFetch}
+          ErrorElement={<ErrorPermission errorDetail={errorFetch.detail} />}
         >
-          <Table>
-            <TableHead sx={{ backgroundColor: grey[300] }}>
-              <TableRow>
-                <TableCell>
-                  <Box>
-                    {/* <Checkbox
+          <TableContainer
+            sx={{
+              border: "1px solid " + grey[300],
+              borderRadius: "0.3em",
+            }}
+          >
+            <Table>
+              <TableHead sx={{ backgroundColor: grey[300] }}>
+                <TableRow>
+                  <TableCell>
+                    <Box>
+                      {/* <Checkbox
                       size="small"
                       sx={{ padding: 0, marginTop: "-0.2em" }}
                     /> */}
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontWeight: 550,
-                        color: grey[700],
-                        marginLeft: "0.5em",
-                      }}
-                    >
-                      No.
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box>
-                    {/* <Checkbox
-                      size="small"
-                      sx={{ padding: 0, marginTop: "-0.2em" }}
-                    /> */}
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontWeight: 550,
-                        color: grey[700],
-                        marginLeft: "0.5em",
-                      }}
-                    >
-                      Username
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    variant="caption"
-                    sx={{ fontWeight: 550, color: grey[700] }}
-                  >
-                    Instansi
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    variant="caption"
-                    sx={{ fontWeight: 550, color: grey[700] }}
-                  >
-                    Akses
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    variant="caption"
-                    sx={{ fontWeight: 550, color: grey[700] }}
-                  >
-                    No. Telepon
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    variant="caption"
-                    sx={{ fontWeight: 550, color: grey[700] }}
-                  >
-                    Options
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users ? (
-                users.length > 0 ? (
-                  users.map((user, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        "&:hover": {
-                          backgroundColor: blueGrey[50],
-                        },
-                      }}
-                    >
-                      <TableCell size="small">
-                        <Typography variant="caption">{index + 1}</Typography>
-                        {/* <Box sx={{ display: "flex", alignItems: "start" }}>
-                          <Checkbox size="small" sx={{ padding: 0 }} />
-                          <Box sx={{ marginLeft: "0.5em" }}>
-                            <Typography
-                              component={"div"}
-                              variant="caption"
-                              sx={{
-                                fontWeight: 550,
-                                color: grey[700],
-                              }}
-                            >
-                              {user.nama}
-                            </Typography>
-                            <Typography variant="caption">
-                              {user.email}
-                            </Typography>
-                          </Box>
-                        </Box> */}
-                      </TableCell>
-                      <TableCell size="small">
-                        <Box sx={{ display: "flex", alignItems: "start" }}>
-                          {/* <Checkbox size="small" sx={{ padding: 0 }} /> */}
-                          <Box sx={{ marginLeft: "0.5em" }}>
-                            <Typography
-                              component={"div"}
-                              variant="caption"
-                              sx={{
-                                fontWeight: 550,
-                                color: grey[700],
-                              }}
-                            >
-                              {user.nama}
-                            </Typography>
-                            <Typography variant="caption">
-                              {user.email}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell size="small">
-                        <Typography variant="caption">
-                          {user.instansi}
-                        </Typography>
-                      </TableCell>
-                      <TableCell size="small">
-                        <Box
-                          sx={{
-                            maxWidth: "10em",
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: "0.3em 0.5em",
-                          }}
-                        >
-                          <Chip
-                            label={user.role}
-                            variant="outlined"
-                            size="small"
-                            sx={{
-                              backgroundColor: lightBlue[50],
-                              color: lightBlue[700],
-                              borderColor: lightBlue[400],
-                            }}
-                          />
-                        </Box>
-                      </TableCell>
-                      <TableCell size="small">
-                        <Typography variant="caption">
-                          {/* +(62) 857-8446-4441 */}
-                          {user.no_telpon}
-                        </Typography>
-                      </TableCell>
-                      <TableCell size="small">
-                        <Tooltip title="Edit" placement="left">
-                          <IconButton
-                            size="small"
-                            onClick={() => {
-                              setSelectedToEdit(user);
-                              setOpenDialog((prev) => ({
-                                ...prev,
-                                update: true,
-                              }));
-                            }}
-                          >
-                            <EditNote fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Hapus" placement="right">
-                          <IconButton
-                            size="small"
-                            onClick={deletePengguna(
-                              user.id,
-                              `${user.nama}#${user.username}`
-                            )}
-                            disabled={Boolean(
-                              loading[`${user.nama}#${user.username}`]
-                            )}
-                          >
-                            {Boolean(
-                              loading[`${user.nama}#${user.username}`]
-                            ) ? (
-                              <CircularProgress size={20} />
-                            ) : (
-                              <Delete fontSize="small" />
-                            )}
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell size="small">
-                      <Alert
-                        severity="warning"
-                        icon={
-                          <Inbox fontSize="small" sx={{ color: grey[700] }} />
-                        }
+                      <Typography
+                        variant="caption"
                         sx={{
-                          fontSize: "small",
-                          backgroundColor: "transparent",
                           fontWeight: 550,
-                          fontStyle: "italic",
+                          color: grey[700],
+                          marginLeft: "0.5em",
                         }}
                       >
-                        No records found
-                      </Alert>
-                    </TableCell>
-                  </TableRow>
-                )
-              ) : (
-                <TableBodyReferensiPenggunaSkeleton />
-              )}
-            </TableBody>
-          </Table>
-          <TablePagination
-            component={"div"}
-            count={5}
-            onPageChange={(_: React.MouseEvent | null, __: number) => {}}
-            page={0}
-            rowsPerPage={5}
-            rowsPerPageOptions={[5]}
+                        No.
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box>
+                      {/* <Checkbox
+                      size="small"
+                      sx={{ padding: 0, marginTop: "-0.2em" }}
+                    /> */}
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 550,
+                          color: grey[700],
+                          marginLeft: "0.5em",
+                        }}
+                      >
+                        Username
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontWeight: 550, color: grey[700] }}
+                    >
+                      Instansi
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontWeight: 550, color: grey[700] }}
+                    >
+                      Role
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontWeight: 550, color: grey[700] }}
+                    >
+                      No. Telepon
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontWeight: 550, color: grey[700] }}
+                    >
+                      Options
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users ? (
+                  users.length > 0 ? (
+                    users.map((user, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:hover": {
+                            backgroundColor: blueGrey[50],
+                          },
+                        }}
+                      >
+                        <TableCell size="small">
+                          <Typography variant="caption">{index + 1}</Typography>
+                        </TableCell>
+                        <TableCell size="small">
+                          <Box sx={{ display: "flex", alignItems: "start" }}>
+                            <Box sx={{ marginLeft: "0.5em" }}>
+                              <Typography
+                                component={"div"}
+                                variant="caption"
+                                sx={{
+                                  fontWeight: 550,
+                                  color: grey[700],
+                                }}
+                              >
+                                {user.nama}
+                              </Typography>
+                              <Typography variant="caption">
+                                {user.email}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+                        <TableCell size="small">
+                          <Typography variant="caption">
+                            {user.instansi}
+                          </Typography>
+                        </TableCell>
+                        <TableCell size="small">
+                          <Box
+                            sx={{
+                              maxWidth: "10em",
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: "0.3em 0.5em",
+                            }}
+                          >
+                            <Chip
+                              label={user.role}
+                              variant="outlined"
+                              size="small"
+                              sx={{
+                                backgroundColor: lightBlue[50],
+                                color: lightBlue[700],
+                                borderColor: lightBlue[400],
+                              }}
+                            />
+                          </Box>
+                        </TableCell>
+                        <TableCell size="small">
+                          <Typography variant="caption">
+                            {/* +(62) 857-8446-4441 */}
+                            {user.no_telpon}
+                          </Typography>
+                        </TableCell>
+                        <TableCell size="small">
+                          <Tooltip title="Edit" placement="left">
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setSelectedToEdit(user);
+                                setOpenDialog((prev) => ({
+                                  ...prev,
+                                  update: true,
+                                }));
+                              }}
+                            >
+                              <EditNote fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Hapus" placement="right">
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setOnDelete({
+                                  status: true,
+                                  data: {
+                                    id: user.id,
+                                    name: user.email,
+                                  },
+                                });
+                              }}
+                              // onClick={deletePengguna(
+                              //   user.id,
+                              //   `${user.nama}#${user.username}`
+                              // )}
+                              // disabled={Boolean(
+                              //   loading[`${user.nama}#${user.username}`]
+                              // )}
+                            >
+                              <Delete fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell size="small">
+                        <Alert
+                          severity="warning"
+                          icon={
+                            <Inbox fontSize="small" sx={{ color: grey[700] }} />
+                          }
+                          sx={{
+                            fontSize: "small",
+                            backgroundColor: "transparent",
+                            fontWeight: 550,
+                            fontStyle: "italic",
+                          }}
+                        >
+                          No records found
+                        </Alert>
+                      </TableCell>
+                    </TableRow>
+                  )
+                ) : (
+                  <TableBodySkeleton
+                    skeletonCells={[
+                      { size: "vshort" },
+                      { size: "vlong" },
+                      { size: "medium" },
+                      { size: "long" },
+                      { size: "medium" },
+                      { size: "short" },
+                    ]}
+                  />
+                )}
+              </TableBody>
+            </Table>
+            <TablePagination
+              component={"div"}
+              count={5}
+              onPageChange={(_: React.MouseEvent | null, __: number) => {}}
+              page={0}
+              rowsPerPage={5}
+              rowsPerPageOptions={[5]}
+            />
+          </TableContainer>
+        </ErrorFetchWrapper>
+        {/* Delete Confirmation */}
+        {onDelete.status && (
+          <DeleteConfirmation
+            onDelete={onDelete}
+            setOnDelete={setOnDelete}
+            deleteHandler={deletePengguna}
           />
-        </TableContainer>
+        )}
         {/* Snackbar Notify */}
         <Snackbar
-          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+          anchorOrigin={{ horizontal: "center", vertical: "top" }}
           open={Boolean(apiStatus)}
           message={apiStatus}
           autoHideDuration={1500}

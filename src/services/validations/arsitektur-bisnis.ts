@@ -19,6 +19,10 @@ const CreateReferensiPengguna = BaseFields.extend({
     required_error: "id detail referensi harus diisi",
     invalid_type_error: "id detail referensi harus berupa angka",
   }),
+  status: z.enum(["AS_IS", "TO_BE"], {
+    required_error: "pilih salah satu status",
+    invalid_type_error: "status harus berupa string",
+  }),
 });
 const CreateIndukReferensi = BaseFields.extend({
   refrensi_arsitektur_id: z.number({

@@ -1,24 +1,12 @@
-import {
-  Close,
-  Person,
-  // PersonAdd,
-  // Visibility,
-  // VisibilityOff,
-} from "@mui/icons-material";
+import { Close, Person } from "@mui/icons-material";
 import {
   Box,
   Button,
   CircularProgress,
   Dialog,
   Divider,
-  // FormControl,
   IconButton,
   InputAdornment,
-  // InputLabel,
-  // MenuItem,
-  // Select,
-  // SelectChangeEvent,
-  // Skeleton,
   Snackbar,
   SnackbarCloseReason,
   Stack,
@@ -27,12 +15,7 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { useEffect, useState } from "react";
-import {
-  // InstansiProps,
-  // RegisterUserProps,
-  // RolesProps,
-  UserProps,
-} from "../../../../pages/administrator/access-manage/types.declaration";
+import { UserProps } from "../../../../pages/administrator/access-manage/types.declaration";
 import { ZodErrorsProps } from "../../../../pages/administrator/r-arch/types.declaration";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
@@ -132,7 +115,7 @@ export default function DialogFormRegisterOnUpdate({
     setZodErrors({});
 
     const requestCreatePengguna: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/user/" + formValue.id,
+      "http://localhost:3000/api/v1/user/" + formValue.id,
       {
         method: "PATCH",
         headers: {
@@ -170,7 +153,7 @@ export default function DialogFormRegisterOnUpdate({
   useEffect(() => {
     const getRoleData = async () => {
       // const requestData: any = await Fetcher(
-      //   "https://spbe-malkot.onrender.com/api/v1/role",
+      //   "http://localhost:3000/api/v1/role",
       //   {
       //     method: "GET",
       //     headers: {
@@ -191,7 +174,7 @@ export default function DialogFormRegisterOnUpdate({
 
     const getInstansiData = async () => {
       // const requestData: any = await Fetcher(
-      //   "https://spbe-malkot.onrender.com/api/v1/instansi",
+      //   "http://localhost:3000/api/v1/instansi",
       //   {
       //     method: "GET",
       //     headers: {
@@ -219,10 +202,10 @@ export default function DialogFormRegisterOnUpdate({
       onClose={() => setOpenDialog((prev) => ({ ...prev, update: false }))}
       PaperProps={{
         sx: {
-          width: "25em",
+          // width: "25em",
           borderRadius: "0.3em",
           paddingX: "0.5em",
-          // minWidth: "25em",
+          minWidth: "25em",
         },
       }}
     >

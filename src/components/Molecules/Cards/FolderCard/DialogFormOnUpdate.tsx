@@ -6,6 +6,7 @@ import {
   Dialog,
   Divider,
   IconButton,
+  InputAdornment,
   Snackbar,
   SnackbarCloseReason,
   TextField,
@@ -23,6 +24,7 @@ export default function DialogFormOnUpdate({
   openDialog,
   setOpenDialog,
   setDataAction,
+  kodeReferensiArsitektur,
 }: {
   folderLevel: "1" | "2" | "3";
   dataRef: any;
@@ -31,6 +33,7 @@ export default function DialogFormOnUpdate({
     React.SetStateAction<{ create: boolean; update: boolean }>
   >;
   setDataAction: React.Dispatch<React.SetStateAction<boolean>>;
+  kodeReferensiArsitektur: string;
 }) {
   /* State */
   const [formValue, setFormValue] = useState<{ nama: string; kode: number }>({
@@ -54,9 +57,15 @@ export default function DialogFormOnUpdate({
         return "Doesn't match any folder level";
     }
   };
+  function generatePrefixCode(refCode: string): string {
+    const prefixCode = refCode.split(".").slice(1).join(".");
+    return prefixCode.slice(0, -1);
+  }
+
   const inputOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value: string | number;
     if (event.target.name === "kode") {
+      console.log("value dari kode \t:", event.target.value);
       value = isNaN(Number(event.target.value))
         ? 0
         : Number(event.target.value);
@@ -148,10 +157,7 @@ export default function DialogFormOnUpdate({
         return setApiStatus("Invalid folder level");
     }
     const requestDataUpdate: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/" +
-        updatePath +
-        "/" +
-        dataRef.id,
+      "http://localhost:3000/api/v1/" + updatePath + "/" + dataRef.id,
       {
         method: "PATCH",
         headers: {
@@ -272,6 +278,13 @@ export default function DialogFormOnUpdate({
                 },
               }}
               InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Typography variant="caption">
+                      {generatePrefixCode(kodeReferensiArsitektur)}
+                    </Typography>
+                  </InputAdornment>
+                ),
                 sx: {
                   fontSize: "small",
                 },
@@ -301,7 +314,7 @@ export default function DialogFormOnUpdate({
           </form>
           {/* Snackbar notify */}
           <Snackbar
-            anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+            anchorOrigin={{ horizontal: "center", vertical: "top" }}
             open={apiStatus !== "" ? true : false}
             autoHideDuration={1500}
             message={apiStatus}

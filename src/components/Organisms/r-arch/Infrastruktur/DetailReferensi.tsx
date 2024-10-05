@@ -11,30 +11,36 @@ import { Alert, AlertTitle, Box, Collapse } from "@mui/material";
 import { Inbox } from "@mui/icons-material";
 import FolderCard from "../../../Molecules/Cards/FolderCard";
 import ReferensiPenggunaInfrastruktur from "./ReferensiPengguna";
+import ErrorFetchWrapper from "../../../Molecules/Errors/ErrorFetchWrapper";
+import ErrorPermission from "../../../Molecules/Errors/ErrorPermission";
 
 export default function DetailReferensiInfrastruktur({
   indukReferensi,
   subReferensi,
   collapseFolder,
-  collapseHandler,
+  setCollapseFolder,
 }: {
   indukReferensi: IndukReferensiProps;
   subReferensi: SubReferensiProps;
   collapseFolder: Record<string, boolean>;
-  collapseHandler: (refPath: string) => () => void;
+  setCollapseFolder: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
 }) {
   /* STATE */
   const [detailReferensi, setDetailReferensi] = useState<
     DetailReferensiProps[] | null
   >(null);
   const [dataAction, setDataAction] = useState<boolean>(false);
+  const [errorFetch, setErrorFetch] = useState<{
+    status: boolean;
+    detail: string;
+  }>({ status: false, detail: "" });
   /* FETCH DATA */
   useEffect(() => {
     const getDetailReferensi = async (subRefId: number) => {
       const requestDetailReferensi: any = await Fetcher(
-        "https://spbe-malkot.onrender.com/api/v1/sub_refrensi/" +
-          subRefId +
-          "/detail",
+        "http://localhost:3000/api/v1/sub_refrensi/" + subRefId + "/detail",
         {
           method: "GET",
           headers: {
@@ -44,6 +50,13 @@ export default function DetailReferensiInfrastruktur({
         }
       );
 
+      if (!requestDetailReferensi.success) {
+        return setErrorFetch({
+          status: true,
+          detail: requestDetailReferensi.message,
+        });
+      }
+
       setDetailReferensi(
         requestDetailReferensi.data["Detail_Refrensi"] as DetailReferensiProps[]
       );
@@ -51,59 +64,77 @@ export default function DetailReferensiInfrastruktur({
 
     getDetailReferensi(subReferensi.id);
   }, [dataAction]);
-  return detailReferensi ? (
-    detailReferensi.length > 0 ? (
-      detailReferensi.map((detailRef, detailRefIndex) => {
-        const detailRefPath = `${detailRef.nama}#${detailRef.kode}`;
-        return (
-          <Box key={detailRefIndex}>
-            <FolderCard
-              folderLevel="3"
-              folderSxProps={{
-                marginLeft: "6em",
-                marginBottom:
-                  detailRefIndex === detailReferensi.length - 1
-                    ? undefined
-                    : "0.5em",
-                marginTop: detailRefIndex === 0 ? undefined : "0.5em",
-              }}
-              kodeReferensiArsitektur={"RAI.0" + detailRef.kode}
-              collapseState={collapseFolder}
-              collapseHandler={collapseHandler}
-              setDataAction={setDataAction}
-              dataRef={detailRef}
-              // indexDataRef={detailRefIndex}
-            />
-            <Collapse
-              in={collapseFolder[detailRefPath]}
-              mountOnEnter
-              unmountOnExit
-              component={"div"}
-              className="sub-ref-lvl3-container"
-            >
-              {/* REFERENSI PENGGUNA ORGANISM */}
-              <ReferensiPenggunaInfrastruktur
-                dataReferensi={{
-                  indukReferensi: indukReferensi,
-                  subReferensi: subReferensi,
-                  detailReferensi: detailRef,
-                }}
-              />
-            </Collapse>
-          </Box>
-        );
-      })
-    ) : (
-      <Alert
-        severity="warning"
-        icon={<Inbox fontSize="small" />}
-        sx={{ marginX: "6em", marginY: "0.5em", fontSize: "small" }}
-      >
-        <AlertTitle fontSize={"small"}>Empty</AlertTitle>
-        No data available at the moment.
-      </Alert>
-    )
-  ) : (
-    <FolderCardSkeleton sxProps={{ marginLeft: "6em" }} />
+  return (
+    <ErrorFetchWrapper
+      errorFetch={errorFetch}
+      ErrorElement={
+        <ErrorPermission
+          errorDetail={errorFetch.detail}
+          sxProps={{ marginLeft: "6em" }}
+        />
+      }
+    >
+      {detailReferensi ? (
+        detailReferensi.length > 0 ? (
+          detailReferensi.map((detailRef, detailRefIndex) => {
+            const detailRefPath = `${detailRef.nama}#${detailRef.kode}`;
+            return (
+              <Box key={detailRefIndex}>
+                <FolderCard
+                  folderLevel="3"
+                  folderSxProps={{
+                    marginLeft: "6em",
+                    marginBottom:
+                      detailRefIndex === detailReferensi.length - 1
+                        ? undefined
+                        : "0.5em",
+                    marginTop: detailRefIndex === 0 ? undefined : "0.5em",
+                  }}
+                  kodeReferensiArsitektur={
+                    "RAI.0" +
+                    indukReferensi.kode +
+                    ".0" +
+                    subReferensi.kode +
+                    ".0" +
+                    detailRef.kode
+                  }
+                  collapseFolder={collapseFolder}
+                  setCollapseFolder={setCollapseFolder}
+                  setDataAction={setDataAction}
+                  dataRef={detailRef}
+                />
+                <Collapse
+                  in={collapseFolder[detailRefPath]}
+                  mountOnEnter
+                  unmountOnExit
+                  component={"div"}
+                  className="sub-ref-lvl3-container"
+                >
+                  {/* REFERENSI PENGGUNA ORGANISM */}
+                  <ReferensiPenggunaInfrastruktur
+                    dataReferensi={{
+                      indukReferensi: indukReferensi,
+                      subReferensi: subReferensi,
+                      detailReferensi: detailRef,
+                    }}
+                  />
+                </Collapse>
+              </Box>
+            );
+          })
+        ) : (
+          <Alert
+            severity="warning"
+            icon={<Inbox fontSize="small" />}
+            sx={{ marginX: "6em", marginY: "0.5em", fontSize: "small" }}
+          >
+            <AlertTitle fontSize={"small"}>Empty</AlertTitle>
+            No data available at the moment.
+          </Alert>
+        )
+      ) : (
+        <FolderCardSkeleton sxProps={{ marginLeft: "6em" }} />
+      )}
+    </ErrorFetchWrapper>
   );
 }

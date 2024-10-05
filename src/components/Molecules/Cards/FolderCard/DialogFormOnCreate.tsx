@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BaseFields } from "../../../../services/validations";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
@@ -22,7 +22,10 @@ export default function DialogFormOnCreate({
   dataRef,
   openDialog,
   setOpenDialog,
-}: {
+  kodeReferensiArsitektur,
+  setCollapseFolder,
+}: // collapseHandler,
+{
   folderLevel: "1" | "2" | "3";
   dataRef: any;
   openDialog: boolean;
@@ -32,6 +35,11 @@ export default function DialogFormOnCreate({
       update: boolean;
     }>
   >;
+  kodeReferensiArsitektur: string;
+  setCollapseFolder: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
+  // collapseHandler: (refPath: string) => () => void;
 }) {
   /* State */
   const [formValue, setFormValue] = useState<{ nama: string; kode: number }>({
@@ -79,7 +87,13 @@ export default function DialogFormOnCreate({
 
   /* Form On Submit */
   const formOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    // const collapsePath = `${dataRef.nama}#${dataRef.kode}`;
+    const collapsePath = `${dataRef.nama}#${dataRef.kode}`;
+    setCollapseFolder((prev) => {
+      return {
+        ...prev,
+        [collapsePath]: false,
+      };
+    });
     let postPath: string;
     let requestBodyProp: string;
     event.preventDefault();
@@ -105,7 +119,7 @@ export default function DialogFormOnCreate({
         return setApiStatus("Invalid folder level");
     }
     const requestDataUpdate: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/" + postPath,
+      "http://localhost:3000/api/v1/" + postPath,
       {
         method: "POST",
         headers: {
@@ -127,10 +141,69 @@ export default function DialogFormOnCreate({
     setLoading(false);
     setFormValue({ nama: "", kode: 0 });
     setApiStatus("Data berhasil ditambahkan");
-    return setTimeout(() => {
+    setTimeout(() => {
       setOpenDialog((prev) => ({ ...prev, create: false }));
     }, 2000);
+    setCollapseFolder((prev) => {
+      return {
+        ...prev,
+        [collapsePath]: true,
+      };
+    });
   };
+
+  /* Fetch Data */
+  useEffect(() => {
+    const getDataRefLength = async (indukRefId: number) => {
+      setLoading(true);
+      let prefixPath: string;
+      let getPath: string;
+      let requestPropDataName: string;
+      switch (folderLevel) {
+        case "1":
+          prefixPath = "induk_refrensi";
+          getPath = "sub";
+          requestPropDataName = "Sub_Refrensi";
+          break;
+        case "2":
+          prefixPath = "sub_refrensi";
+          getPath = "detail";
+          requestPropDataName = "Detail_Refrensi";
+          break;
+        default:
+          setLoading(false);
+          return setApiStatus("Invalid Folder Level!");
+      }
+      const requestDataRefLength: any = await Fetcher(
+        "http://localhost:3000/api/v1/" +
+          prefixPath +
+          "/" +
+          indukRefId +
+          "/" +
+          getPath,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + Cookies.get("authToken"),
+          },
+        }
+      );
+      if (!requestDataRefLength.success) {
+        setLoading(false);
+        return setApiStatus(requestDataRefLength.message);
+      }
+
+      setFormValue((prev) => ({
+        ...prev,
+        kode: requestDataRefLength.data[requestPropDataName].length + 1,
+      }));
+
+      setLoading(false);
+    };
+
+    getDataRefLength(dataRef.id);
+  }, []);
   return (
     <Dialog
       open={openDialog}
@@ -231,10 +304,18 @@ export default function DialogFormOnCreate({
                 },
               }}
               sx={{ marginBottom: "0.75em" }}
-              value={formValue.kode}
+              value={
+                kodeReferensiArsitektur.split(".").slice(1).join(".") +
+                ".0" +
+                formValue.kode
+              }
+              disabled
               onChange={inputOnChange}
               error={Boolean(zodErrors?.kode)}
-              helperText={zodErrors && zodErrors["kode"]}
+              helperText={
+                (zodErrors && zodErrors["kode"]) ??
+                "Kode referensi dibuat secara otomatis"
+              }
             />
             <Divider orientation="horizontal" sx={{ marginY: "0.5em" }} />
             <Box sx={{ textAlign: "end", marginBottom: "0.75em" }}>
@@ -255,7 +336,7 @@ export default function DialogFormOnCreate({
           </form>
           {/* Snackbar notify */}
           <Snackbar
-            anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+            anchorOrigin={{ horizontal: "center", vertical: "top" }}
             open={apiStatus !== "" ? true : false}
             autoHideDuration={1500}
             message={apiStatus}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 import { Box } from "@mui/material";
 
@@ -17,7 +17,7 @@ export default function ApacheECharts({
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<echarts.ECharts | null>(null);
   /* State */
-  const [options, setOptions] = useState<echarts.EChartsOption>(chartOptions);
+  // const [options, setOptions] = useState<echarts.EChartsOption>(chartOptions);
 
   /* useEffect */
   useEffect(() => {
@@ -28,13 +28,13 @@ export default function ApacheECharts({
         height: "auto",
       });
 
-      chartInstanceRef.current.setOption(options);
+      chartInstanceRef.current.setOption(chartOptions);
 
       window.addEventListener("resize", () => {
         chartInstanceRef.current?.resize();
       });
     }
-  }, [options]);
+  }, []); // options state as dependency;
   return (
     <Box
       ref={chartContainerRef}

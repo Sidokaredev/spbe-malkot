@@ -1,11 +1,10 @@
-import { Box, Grid, Typography } from "@mui/material"
-import SankeyIcon from "/logos/domain-layanan/sankey-title.svg"
-import TableLabel from "/logos/probis-card/table-label.svg"
-import BaseTable from "../Table"
-import { EChartsOption } from "echarts"
-import { blue, green, grey, lightBlue, orange, purple } from "@mui/material/colors"
-import ApacheECharts from "../../Molecules/Charts/ApacheECharts"
-import { CallbackDataParams } from "echarts/types/dist/shared"
+import { Box, Grid, Typography } from "@mui/material";
+import SankeyIcon from "/logos/domain-layanan/sankey-title.svg";
+import TableLabel from "/logos/probis-card/table-label.svg";
+import BaseTable from "../Table";
+import { EChartsOption } from "echarts";
+import { lightBlue } from "@mui/material/colors";
+import ApacheECharts from "../../Molecules/Charts/ApacheECharts";
 
 export default function DomainAplikasiSection3() {
   const chartOptions: EChartsOption = {
@@ -25,13 +24,13 @@ export default function DomainAplikasiSection3() {
         show: true,
         position: "right",
         distance: 5,
-        formatter: '{b} : {c}',
+        formatter: "{b} : {c}",
         color: "black",
-        fontFamily: "Poppins"
+        fontFamily: "Poppins",
       },
       labelLayout: {}, // move label when overlapped
       itemStyle: {
-        borderRadius: 0
+        borderRadius: 0,
       },
       lineStyle: {
         color: "gradient",
@@ -45,7 +44,7 @@ export default function DomainAplikasiSection3() {
           show: true,
         },
         itemStyle: {},
-        lineStyle: {}
+        lineStyle: {},
       },
       blur: {
         label: {},
@@ -70,26 +69,26 @@ export default function DomainAplikasiSection3() {
           emphasis: {
             label: {
               // fontWeight: "bold"
-            }
-          }
+            },
+          },
         },
         {
           name: "RAA.01 Aplikasi Umum",
           itemStyle: {
-            color: lightBlue[700]
-          }
+            color: lightBlue[700],
+          },
         },
         {
           name: "Instansi Pusat",
           itemStyle: {
-            color: "#01579B"
-          }
+            color: "#01579B",
+          },
         },
         {
           name: "Instansi Daerah",
           itemStyle: {
-            color: lightBlue[500]
-          }
+            color: lightBlue[500],
+          },
         },
       ],
       links: [
@@ -97,27 +96,27 @@ export default function DomainAplikasiSection3() {
           source: "RAA.01. Aplikasi Khusus",
           target: "Instansi Pusat",
           value: 30,
-          emphasis: {}
+          emphasis: {},
         },
         {
           source: "RAA.01. Aplikasi Khusus",
           target: "Instansi Daerah",
-          value: 24
+          value: 24,
         },
         {
           source: "RAA.01 Aplikasi Umum",
           target: "Instansi Pusat",
-          value: 47
+          value: 47,
         },
         {
           source: "RAA.01 Aplikasi Umum",
           target: "Instansi Daerah",
-          value: 13
+          value: 13,
         },
       ],
-      tooltip: {}
-    }
-  }
+      tooltip: {},
+    },
+  };
 
   const row_body_data = [
     {
@@ -140,29 +139,24 @@ export default function DomainAplikasiSection3() {
       perangkat_daerah: "Dinas Lingkungan Hidup",
       jumlah: 55,
     },
-  ]
+  ];
   return (
     <>
-      <Grid container
+      <Grid
+        container
         spacing={2}
         sx={{
-          height: "25em"
+          height: "25em",
         }}
       >
-        <Grid item
-          xs={6}
-        >
-          <Box
-            display={"flex"}
-            alignItems={"center"}
-            marginBottom={1}
-          >
+        <Grid item xs={6}>
+          <Box display={"flex"} alignItems={"center"} marginBottom={1}>
             <Box
               component={"img"}
               src={SankeyIcon}
               sx={{
                 width: 24,
-                height: 24
+                height: 24,
               }}
             />
             <Typography
@@ -178,20 +172,14 @@ export default function DomainAplikasiSection3() {
           {/* Chart */}
           <ApacheECharts chartOptions={chartOptions} />
         </Grid>
-        <Grid item
-          xs={6}
-        >
-          <Box
-            display={"flex"}
-            alignItems={"center"}
-            marginBottom={1}
-          >
+        <Grid item xs={6}>
+          <Box display={"flex"} alignItems={"center"} marginBottom={1}>
             <Box
               component={"img"}
               src={TableLabel}
               sx={{
                 width: 24,
-                height: 24
+                height: 24,
               }}
             />
             <Typography
@@ -216,5 +204,5 @@ export default function DomainAplikasiSection3() {
         </Grid>
       </Grid>
     </>
-  )
+  );
 }

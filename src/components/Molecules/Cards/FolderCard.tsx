@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import {
   Box,
+  CircularProgress,
   Divider,
   IconButton,
   List,
@@ -18,6 +19,8 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
+  Snackbar,
+  SnackbarCloseReason,
   Typography,
   type SxProps,
 } from "@mui/material";
@@ -25,26 +28,29 @@ import { grey, lightBlue, red } from "@mui/material/colors";
 import React, { useState } from "react";
 import DialogFormOnCreate from "./FolderCard/DialogFormOnCreate";
 import DialogFormOnUpdate from "./FolderCard/DialogFormOnUpdate";
+import { Fetcher } from "../../../services/request-helpers";
+import Cookies from "js-cookie";
+import DeleteConfirmation from "./DeleteConfirmation";
 
 export default function FolderCard({
   folderLevel,
   folderSxProps,
-  collapseHandler,
+  // collapseHandler,
   dataRef,
-  // indexDataRef,
-  collapseState,
+  collapseFolder,
+  setCollapseFolder,
   kodeReferensiArsitektur,
-  // disableReferensiArsitekturChecker,
   setDataAction,
 }: {
   folderLevel: "1" | "2" | "3";
   folderSxProps?: SxProps;
-  collapseHandler: (refPath: string) => () => void;
+  // collapseHandler: (refPath: string) => () => void;
   dataRef: any;
-  // indexDataRef: number;
-  collapseState: Record<string, boolean>;
+  collapseFolder: Record<string, boolean>;
+  setCollapseFolder: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
   kodeReferensiArsitektur: string;
-  // disableReferensiArsitekturChecker?: boolean;
   setDataAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   /* State */
@@ -54,6 +60,65 @@ export default function FolderCard({
     create: boolean;
     update: boolean;
   }>({ create: false, update: false });
+  const [apiStatus, setApiStatus] = useState<string>("");
+  const [onDelete, setOnDelete] = useState<{
+    status: boolean;
+    data: { id: number; name: string };
+  }>({ status: false, data: { id: 0, name: "" } });
+  /* Handler */
+  const snackbarOnClose = (
+    _: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setApiStatus("");
+  };
+
+  const collapseHandler = (refPath: string) => () => {
+    setCollapseFolder((prev) => ({
+      ...prev,
+      [refPath]: !prev[refPath],
+    }));
+  };
+
+  /* Delete Folder */
+  const deleteFolder = async (refId: number) => {
+    let deletePath: string;
+    switch (folderLevel) {
+      case "1":
+        deletePath = "induk_refrensi";
+        break;
+      case "2":
+        deletePath = "sub_refrensi";
+        break;
+      case "3":
+        deletePath = "refrensi_detail";
+        break;
+      default:
+        return setApiStatus("Invalid Folder Referensi");
+    }
+    const requestDeletionReferensi = await Fetcher(
+      "http://localhost:3000/api/v1/" + deletePath + "/" + refId,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + Cookies.get("authToken"),
+        },
+      }
+    );
+
+    console.log("reques deletion \t:", requestDeletionReferensi);
+    if (!requestDeletionReferensi.success) {
+      return setApiStatus("Gagal, masih terdapat item di dalam referensi");
+    }
+
+    setDataAction((prev) => !prev);
+    return setApiStatus("Berhasil menghapus referensi");
+  };
 
   const dataRefPath = `${dataRef.nama}#${dataRef.kode}`;
   return (
@@ -66,19 +131,22 @@ export default function FolderCard({
         alignItems: "center",
         padding: "0.5em 0em",
         borderRadius: "0.3em",
-        boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+        // boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+        backgroundColor: collapseFolder[dataRefPath]
+          ? lightBlue[50]
+          : undefined,
         ...folderSxProps,
       }}
     >
       <IconButton size="small" onClick={collapseHandler(dataRefPath)}>
-        {collapseState[dataRefPath] ? (
+        {collapseFolder[dataRefPath] ? (
           <ExpandMore fontSize="small" sx={{ color: grey[600] }} />
         ) : (
           <ChevronRightOutlined fontSize="small" sx={{ color: grey[600] }} />
         )}
       </IconButton>
       <Box component={"div"}>
-        {collapseState[dataRefPath] ? (
+        {collapseFolder[dataRefPath] ? (
           <FolderOpen fontSize="large" sx={{ color: lightBlue[400] }} />
         ) : (
           <Folder fontSize="large" sx={{ color: lightBlue[400] }} />
@@ -150,8 +218,8 @@ export default function FolderCard({
                   <ListItemText
                     primary={
                       <Typography variant="caption">
-                        {folderLevel === "1" && "Tambah Sub Referensi"}
-                        {folderLevel === "2" && "Tambah Detail Referensi"}
+                        {folderLevel === "1" && "Tambah Level 2"}
+                        {folderLevel === "2" && "Tambah Level 3"}
                       </Typography>
                     }
                   />
@@ -164,6 +232,7 @@ export default function FolderCard({
                 onClick={() =>
                   setOpenDialog((prev) => ({ ...prev, update: true }))
                 }
+                aria-hidden={false}
               >
                 <ListItemIcon sx={{ paddingRight: "0.5em" }}>
                   <Edit fontSize="small" />
@@ -176,7 +245,16 @@ export default function FolderCard({
             <ListItem disableGutters disablePadding>
               <ListItemButton
                 sx={{ padding: "0.2em 1em", color: red[300] }}
-                disabled // ARE DISABLED FOR A WHILE...
+                // ARE DISABLED FOR A WHILE...
+                onClick={() => {
+                  setOnDelete({
+                    status: true,
+                    data: {
+                      id: dataRef.id,
+                      name: dataRef.nama,
+                    },
+                  });
+                }}
               >
                 <ListItemIcon sx={{ paddingRight: "0.5em" }}>
                   <Delete fontSize="small" sx={{ color: red[300] }} />
@@ -190,6 +268,14 @@ export default function FolderCard({
             </ListItem>
           </List>
         </Menu>
+        {/* Delete Confirmation */}
+        {onDelete.status && (
+          <DeleteConfirmation
+            onDelete={onDelete}
+            setOnDelete={setOnDelete}
+            deleteHandler={deleteFolder}
+          />
+        )}
         {/* Dialog */}
         <DialogFormOnUpdate
           folderLevel={folderLevel}
@@ -197,12 +283,25 @@ export default function FolderCard({
           dataRef={dataRef}
           openDialog={openDialog.update}
           setOpenDialog={setOpenDialog}
+          kodeReferensiArsitektur={kodeReferensiArsitektur}
         />
-        <DialogFormOnCreate
-          folderLevel={folderLevel}
-          dataRef={dataRef}
-          openDialog={openDialog.create}
-          setOpenDialog={setOpenDialog}
+        {openDialog.create && (
+          <DialogFormOnCreate
+            folderLevel={folderLevel}
+            dataRef={dataRef}
+            openDialog={openDialog.create}
+            setOpenDialog={setOpenDialog}
+            kodeReferensiArsitektur={kodeReferensiArsitektur}
+            setCollapseFolder={setCollapseFolder}
+          />
+        )}
+        {/* Snackbar Notify */}
+        <Snackbar
+          anchorOrigin={{ horizontal: "center", vertical: "top" }}
+          open={apiStatus !== "" ? true : false}
+          autoHideDuration={1500}
+          message={apiStatus}
+          onClose={snackbarOnClose}
         />
       </Box>
     </Box>

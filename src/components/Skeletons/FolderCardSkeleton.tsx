@@ -1,4 +1,4 @@
-import { ExpandMore, Security } from "@mui/icons-material";
+import { MoreVert } from "@mui/icons-material";
 import { Box, IconButton, Skeleton, SxProps, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
@@ -55,8 +55,8 @@ export default function FolderCardSkeleton({ sxProps }: { sxProps?: SxProps }) {
             marginBottom:
               index === skeletonTextLength.length - 1 ? undefined : "0.5em",
             paddingLeft: "2em",
-            paddingY: "0.5em",
-            boxShadow: grey[300] + " 0px 1px 4px",
+            paddingY: "0.3em",
+            // boxShadow: grey[300] + " 0px 1px 4px",
             borderRadius: "0.3em",
             ...sxProps,
           }}
@@ -69,7 +69,7 @@ export default function FolderCardSkeleton({ sxProps }: { sxProps?: SxProps }) {
               sx={{ borderRadius: "0.3em" }}
             />
           </Box>
-          <Box component={"div"}>
+          <Box component={"div"} sx={{ flexGrow: 1 }}>
             <Skeleton variant="text">
               <Typography variant="subtitle1">{data.text}</Typography>
             </Skeleton>

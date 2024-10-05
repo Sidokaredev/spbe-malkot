@@ -28,6 +28,7 @@ export type ReferensiPenggunaProps = {
   user_id: number;
   nama: string;
   kode: number;
+  status: string;
   created_at: string;
   updated_at: string;
 };

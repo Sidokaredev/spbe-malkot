@@ -1,30 +1,20 @@
 import {
   Box,
-  Grid,
   TextField,
   Typography,
   Button,
   InputAdornment,
   IconButton,
-  Divider,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Stack,
-  SelectChangeEvent,
   Snackbar,
   SnackbarCloseReason,
   CircularProgress,
 } from "@mui/material";
 import AccountsLayout from "../../../templates/AccountsLayout";
-import { grey, lightBlue } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Link, useLoaderData } from "react-router-dom";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SignIn } from "../../../services/validations";
-import { ZodError } from "zod";
 import Cookies from "js-cookie";
 import { AuthApi } from "../../../services/accounts/auth";
 
@@ -44,9 +34,9 @@ export default function Auth() {
   const [errorAuth, setErrorAuth] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   /* Form On-Change Handler */
-  const selectOnChange = (event: SelectChangeEvent) => {
-    setFormValue((prev) => ({ ...prev, instansi: String(event.target.value) }));
-  };
+  // const selectOnChange = (event: SelectChangeEvent) => {
+  //   setFormValue((prev) => ({ ...prev, instansi: String(event.target.value) }));
+  // };
   const inputOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormValue((prev) => ({
       ...prev,
@@ -385,7 +375,7 @@ export default function Auth() {
               </Typography>
               {/* Snackbar */}
               <Snackbar
-                anchorOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "center", vertical: "top" }}
                 open={Boolean(errorAuth)}
                 message={errorAuth}
                 autoHideDuration={2000}

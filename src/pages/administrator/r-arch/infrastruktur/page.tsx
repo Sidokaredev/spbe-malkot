@@ -17,6 +17,8 @@ import FolderCardSkeleton from "../../../../components/Skeletons/FolderCardSkele
 import FolderCard from "../../../../components/Molecules/Cards/FolderCard";
 import DialogFormBase from "../../../../components/Molecules/Cards/FolderCard/DialogFormBase";
 import SubReferensiAplikasi from "../../../../components/Organisms/r-arch/Aplikasi/SubReferensi";
+import ErrorFetchWrapper from "../../../../components/Molecules/Errors/ErrorFetchWrapper";
+import ErrorPermission from "../../../../components/Molecules/Errors/ErrorPermission";
 
 export default function ArsitekturInfrastruktur() {
   /* STATE */
@@ -28,18 +30,16 @@ export default function ArsitekturInfrastruktur() {
   );
   const [dataAction, setDataAction] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [errorFetch, setErrorFetch] = useState<{
+    status: boolean;
+    detail: string;
+  }>({ status: false, detail: "" });
   /* HANDLER */
-  const collapseHandler = (refPath: string) => () => {
-    setCollapseFolder((prev) => ({
-      ...prev,
-      [refPath]: !prev[refPath],
-    }));
-  };
   /* FETCH DATA */
   useEffect(() => {
     const getIndukReferensi = async () => {
       const requestIndukReferensiData: any = await Fetcher(
-        "https://spbe-malkot.onrender.com/api/v1/refrensi_arsitektur/5/induk", // REFERENSI ARSITEKRUR STILL STATIC
+        "http://localhost:3000/api/v1/refrensi_arsitektur/5/induk", // REFERENSI ARSITEKRUR STILL STATIC
         {
           method: "GET",
           headers: {
@@ -48,6 +48,13 @@ export default function ArsitekturInfrastruktur() {
           },
         }
       );
+
+      if (!requestIndukReferensiData.success) {
+        return setErrorFetch({
+          status: true,
+          detail: requestIndukReferensiData.message,
+        });
+      }
 
       setIndukReferensi(
         requestIndukReferensiData.data[
@@ -95,63 +102,70 @@ export default function ArsitekturInfrastruktur() {
               sx={{ textTransform: "none" }}
               onClick={() => setOpenDialog(true)}
             >
-              Induk Referensi
+              {/* Induk Referensi */}
+              Level 1
             </Button>
           </Box>
           {/* Folder Tree */}
-          {indukReferensi ? (
-            indukReferensi.length > 0 ? (
-              indukReferensi.map((indukRef, indukRefIndex) => {
-                const indukRefPath = `${indukRef.nama}#${indukRef.kode}`;
-                return (
-                  <Box key={indukRefIndex}>
-                    <FolderCard
-                      folderLevel="1"
-                      kodeReferensiArsitektur={"RAI.0" + indukRef.kode}
-                      collapseState={collapseFolder}
-                      collapseHandler={collapseHandler}
-                      dataRef={indukRef}
-                      // indexDataRef={indukRefIndex}
-                      setDataAction={setDataAction}
-                    />
-                    <Collapse
-                      in={collapseFolder[indukRefPath]}
-                      mountOnEnter
-                      unmountOnExit
-                      component={"div"}
-                      className="sub-ref-container"
-                    >
-                      {/* SUB REFERENSI ORGANISM */}
-                      <SubReferensiAplikasi
+          <ErrorFetchWrapper
+            errorFetch={errorFetch}
+            ErrorElement={<ErrorPermission errorDetail={errorFetch.detail} />}
+          >
+            {indukReferensi ? (
+              indukReferensi.length > 0 ? (
+                indukReferensi.map((indukRef, indukRefIndex) => {
+                  const indukRefPath = `${indukRef.nama}#${indukRef.kode}`;
+                  return (
+                    <Box key={indukRefIndex}>
+                      <FolderCard
+                        folderLevel="1"
+                        kodeReferensiArsitektur={"RAI.0" + indukRef.kode}
                         collapseFolder={collapseFolder}
-                        collapseHandler={collapseHandler}
-                        indukReferensi={indukRef}
+                        setCollapseFolder={setCollapseFolder}
+                        dataRef={indukRef}
+                        setDataAction={setDataAction}
                       />
-                    </Collapse>
-                  </Box>
-                );
-              })
+                      <Collapse
+                        in={collapseFolder[indukRefPath]}
+                        mountOnEnter
+                        unmountOnExit
+                        component={"div"}
+                        className="sub-ref-container"
+                      >
+                        {/* SUB REFERENSI ORGANISM */}
+                        <SubReferensiAplikasi
+                          collapseFolder={collapseFolder}
+                          setCollapseFolder={setCollapseFolder}
+                          indukReferensi={indukRef}
+                        />
+                      </Collapse>
+                    </Box>
+                  );
+                })
+              ) : (
+                <Alert
+                  severity="warning"
+                  icon={<Inbox fontSize="small" />}
+                  sx={{ marginX: "3em", marginY: "0.5em", fontSize: "small" }}
+                >
+                  <AlertTitle fontSize={"small"}>Empty</AlertTitle>
+                  No data available at the moment.
+                </Alert>
+              )
             ) : (
-              <Alert
-                severity="warning"
-                icon={<Inbox fontSize="small" />}
-                sx={{ marginX: "3em", marginY: "0.5em", fontSize: "small" }}
-              >
-                <AlertTitle fontSize={"small"}>Empty</AlertTitle>
-                No data available at the moment.
-              </Alert>
-            )
-          ) : (
-            <FolderCardSkeleton />
-          )}
+              <FolderCardSkeleton />
+            )}
+          </ErrorFetchWrapper>
         </Box>
         {/* Dialog */}
-        <DialogFormBase
-          referensiArsitekturId={5} // STATIC
-          openDialog={openDialog}
-          setOpenDialog={setOpenDialog}
-          setDataAction={setDataAction}
-        />
+        {openDialog && (
+          <DialogFormBase
+            referensiArsitekturId={5} // STATIC
+            openDialog={openDialog}
+            setOpenDialog={setOpenDialog}
+            setDataAction={setDataAction}
+          />
+        )}
       </Box>
     </DashboardAdminLayout>
   );

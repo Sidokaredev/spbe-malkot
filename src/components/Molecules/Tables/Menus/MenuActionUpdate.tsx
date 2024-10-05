@@ -3,8 +3,14 @@ import {
   Box,
   Button,
   CircularProgress,
+  FormControl,
   IconButton,
+  InputLabel,
   Menu,
+  MenuItem,
+  Popover,
+  Select,
+  SelectChangeEvent,
   Slide,
   Snackbar,
   SnackbarCloseReason,
@@ -26,6 +32,7 @@ import {
 /* Type */
 type CreateReferensiPenggunaForm = {
   nama: string;
+  status: string;
   kode: number;
 };
 
@@ -52,16 +59,13 @@ interface BaseMenuActionProps {
     indukReferensi: IndukReferensiProps;
     subReferensi: SubReferensiProps;
     detailReferensi: DetailReferensiProps;
-    // indukReferensi: string;
-    // subReferensi: string;
-    // detailReferensi: string;
-    // detailRefId: number;
   };
   setDataAction: React.Dispatch<React.SetStateAction<boolean>>;
   detailReferensiItem: {
     id: number;
     nama: string;
     kode: number;
+    status: string;
   };
 }
 
@@ -84,8 +88,9 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
   } = props;
   /* State */
   const [formValue, setFormValue] = useState<CreateReferensiPenggunaForm>({
-    nama: "",
-    kode: 0,
+    nama: detailReferensiItem.nama,
+    status: detailReferensiItem.status,
+    kode: detailReferensiItem.kode,
   });
   const [refPengguna, setRefPengguna] = useState<RefPenggunaProps | null>(null);
   const [zodErrors, setZodErrors] = useState<{ [key: string]: string[] }>();
@@ -103,6 +108,12 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
       ...prev,
       [event.target.name]:
         event.target.name === "kode" ? value : event.target.value,
+    }));
+  };
+  const selectOnChange = (event: SelectChangeEvent<string>) => {
+    setFormValue((prev) => ({
+      ...prev,
+      status: event.target.value,
     }));
   };
   const snackbarOnClose = (
@@ -131,8 +142,7 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
     }
     setZodErrors({});
     const requestUpdateReferensiPengguna: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/refrensi_pengguna/" +
-        refPengguna?.id,
+      "http://localhost:3000/api/v1/refrensi_pengguna/" + refPengguna?.id,
       {
         method: "PATCH",
         headers: {
@@ -151,6 +161,7 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
     }
     setFormValue({
       nama: "",
+      status: "",
       kode: 0,
     });
     setLoading(false);
@@ -161,40 +172,49 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
     }, 2000);
   };
 
-  const getRefrensiPenggunaDetail = async (refPenggunaId: number) => {
-    setLoading(true);
-    const requestCok: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/refrensi_pengguna/" +
-        refPenggunaId,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + Cookies.get("authToken"),
-        },
-      }
-    );
-    setRefPengguna(requestCok.data as RefPenggunaProps);
-    setFormValue({
-      nama: requestCok.data.nama,
-      kode: requestCok.data.kode,
-    });
-    setLoading(false);
-  };
+  // const getRefrensiPenggunaDetail = async (refPenggunaId: number) => {
+  //   setLoading(true);
+  //   const requestData: any = await Fetcher(
+  //     "http://localhost:3000/api/v1/refrensi_pengguna/" + refPenggunaId,
+  //     {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: "Bearer " + Cookies.get("authToken"),
+  //       },
+  //     }
+  //   );
+  //   console.info("request referensi pengguna \t:", requestData);
+  //   setRefPengguna(requestData.data as RefPenggunaProps);
+  //   setFormValue({
+  //     nama: requestData.data.nama,
+  //     status: requestData.data.status,
+  //     kode: requestData.data.kode,
+  //   });
+  //   setLoading(false);
+  // };
 
   useEffect(() => {
-    getRefrensiPenggunaDetail(detailReferensiItem.id);
+    // getRefrensiPenggunaDetail(detailReferensiItem.id);
   }, []);
   return (
-    <Menu
-      anchorEl={anchorEl}
+    <Popover
       open={menuOpen}
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        horizontal: "right",
+        vertical: "bottom",
+      }}
+      transformOrigin={{
+        horizontal: "right",
+        vertical: "top",
+      }}
       TransitionComponent={SlideTransition}
       slotProps={{
         paper: {
           sx: {
             minWidth: "30em",
-            paddingX: "1em",
+            padding: "1em",
             borderRadius: "0.3em 0em 0em 0.3em",
             boxShadow:
               "rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
@@ -266,7 +286,8 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
                 color: grey[800],
               }}
             >
-              Induk Referensi
+              {/* Induk Referensi */}
+              Level 1
             </Typography>
             <Typography
               sx={{
@@ -287,7 +308,8 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
                 color: grey[800],
               }}
             >
-              Sub Referensi
+              {/* Sub Referensi */}
+              Level 2
             </Typography>
             <Typography
               sx={{
@@ -308,7 +330,8 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
                 color: grey[800],
               }}
             >
-              Detail Referensi
+              {/* Detail Referensi */}
+              Level 3
             </Typography>
             <Typography
               sx={{
@@ -348,7 +371,7 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
         </Box>
         {/* Snackbar */}
         <Snackbar
-          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+          anchorOrigin={{ horizontal: "center", vertical: "top" }}
           open={apiStatus !== "" ? true : false}
           autoHideDuration={1500}
           message={apiStatus}
@@ -383,12 +406,43 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
               error={zodErrors && zodErrors["nama"] ? true : false}
               helperText={zodErrors && zodErrors["nama"]}
             />
+            <FormControl fullWidth size="small" sx={{ marginBottom: "0.75em" }}>
+              <InputLabel id="status" sx={{ fontSize: "small" }}>
+                Status
+              </InputLabel>
+              <Select
+                name="status"
+                labelId="status"
+                id="demo-select-small"
+                label="Instansi"
+                MenuProps={{
+                  slotProps: {
+                    paper: {
+                      sx: {
+                        fontSize: "small",
+                      },
+                    },
+                  },
+                }}
+                sx={{ fontSize: "small" }}
+                value={formValue.status}
+                onChange={selectOnChange}
+              >
+                <MenuItem value={"AS_IS"} sx={{ fontSize: "small" }}>
+                  As-Is
+                </MenuItem>
+                <MenuItem value={"TO_BE"} sx={{ fontSize: "small" }}>
+                  To-Be
+                </MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               name="kode"
               type="text"
               label="Kode"
               placeholder={"Masukkan kode item referensi"}
               size="small"
+              autoComplete="off"
               fullWidth
               InputProps={{
                 sx: {
@@ -478,6 +532,6 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
           </form>
         </Box>
       </Box>
-    </Menu>
+    </Popover>
   );
 }

@@ -3,17 +3,17 @@ import {
   AdminPanelSettings,
   BarChart,
   Domain,
+  GavelRounded,
   Groups,
+  LockRounded,
   ManageAccounts,
   MiscellaneousServices,
-  MoreVert,
+  PersonRounded,
   Security,
-  Settings,
   Widgets,
 } from "@mui/icons-material";
 import {
   AppBar,
-  Avatar,
   Backdrop,
   Box,
   Button,
@@ -27,8 +27,6 @@ import {
   ListItemText,
   ListSubheader,
   Menu,
-  MenuList,
-  Paper,
   Skeleton,
   Toolbar,
   Tooltip,
@@ -109,6 +107,21 @@ export default function DashboardAdminLayout({
       label: "Kelola Pengguna",
       path: "/access-manage/users",
     },
+    {
+      icon: <GavelRounded />,
+      label: "Instansi",
+      path: "/access-manage/goverments",
+    },
+    {
+      icon: <PersonRounded />,
+      label: "Roles",
+      path: "/access-manage/roles",
+    },
+    {
+      icon: <LockRounded />,
+      label: "Kelola Akses",
+      path: "/access-manage/permissions",
+    },
   ];
   /* Handler */
   const logOut = () => {
@@ -137,8 +150,8 @@ export default function DashboardAdminLayout({
           <Box component={"div"} sx={{ display: "flex", alignItems: "center" }}>
             <AdminPanelSettings />
             <Typography
-              variant="subtitle2"
-              sx={{ marginX: "0.5em", marginTop: "0.2em" }}
+              variant="subtitle1"
+              sx={{ marginX: "0.5em", marginTop: "0.2em", fontWeight: 550 }}
             >
               Administrator
             </Typography>
@@ -298,7 +311,9 @@ export default function DashboardAdminLayout({
                   paddingX: "1.7em",
                 }}
               >
-                <Typography variant="caption">Manajemen Pengguna</Typography>
+                <Typography variant="caption">
+                  Manajemen Akses dan Pengguna
+                </Typography>
               </ListSubheader>
             }
           >

@@ -120,7 +120,7 @@ export default function DialogFormRegisterOnCreate({
     setZodErrors({});
 
     const requestCreatePengguna: any = await Fetcher(
-      "https://spbe-malkot.onrender.com/api/v1/auth/daftar",
+      "http://localhost:3000/api/v1/auth/daftar",
       {
         method: "POST",
         headers: {
@@ -156,7 +156,7 @@ export default function DialogFormRegisterOnCreate({
   useEffect(() => {
     const getRoleData = async () => {
       const requestData: any = await Fetcher(
-        "https://spbe-malkot.onrender.com/api/v1/role",
+        "http://localhost:3000/api/v1/role",
         {
           method: "GET",
           headers: {
@@ -165,16 +165,22 @@ export default function DialogFormRegisterOnCreate({
           },
         }
       );
-
+      if (!requestData.success) {
+        setApiStatus(requestData.message);
+        return setSelectOptions((prev) => ({
+          ...prev,
+          role: [{ id: 0, nama: requestData.message }],
+        }));
+      }
       setSelectOptions((prev) => ({
         ...prev,
-        role: requestData.data,
+        role: requestData.data ?? [],
       }));
     };
 
     const getInstansiData = async () => {
       const requestData: any = await Fetcher(
-        "https://spbe-malkot.onrender.com/api/v1/instansi",
+        "http://localhost:3000/api/v1/instansi",
         {
           method: "GET",
           headers: {
@@ -183,10 +189,16 @@ export default function DialogFormRegisterOnCreate({
           },
         }
       );
-
+      if (!requestData.success) {
+        setApiStatus(requestData.message);
+        return setSelectOptions((prev) => ({
+          ...prev,
+          instansi: [{ id: 0, nama: requestData.message }],
+        }));
+      }
       setSelectOptions((prev) => ({
         ...prev,
-        instansi: requestData.data,
+        instansi: requestData.data ?? [],
       }));
     };
 
@@ -279,15 +291,21 @@ export default function DialogFormRegisterOnCreate({
                   onChange={selectOnChange}
                   error={Boolean(zodErrors && zodErrors["role_id"])}
                 >
-                  {selectOptions.role.map((role, index) => (
-                    <MenuItem
-                      key={index}
-                      value={role.id}
-                      sx={{ fontSize: "small" }}
-                    >
-                      {role.nama}
+                  {selectOptions.role.length > 0 ? (
+                    selectOptions.role.map((role, index) => (
+                      <MenuItem
+                        key={index}
+                        value={role.id}
+                        sx={{ fontSize: "small" }}
+                      >
+                        {role.nama}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="" sx={{ fontSize: "small" }}>
+                      Gagal memuat
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
               </FormControl>
               <FormControl
@@ -316,15 +334,21 @@ export default function DialogFormRegisterOnCreate({
                   onChange={selectOnChange}
                   error={Boolean(zodErrors && zodErrors["instansi_id"])}
                 >
-                  {selectOptions.instansi.map((instansi, index) => (
-                    <MenuItem
-                      key={index}
-                      value={instansi.id}
-                      sx={{ fontSize: "small" }}
-                    >
-                      {instansi.nama}
+                  {selectOptions.instansi.length > 0 ? (
+                    selectOptions.instansi.map((instansi, index) => (
+                      <MenuItem
+                        key={index}
+                        value={instansi.id}
+                        sx={{ fontSize: "small" }}
+                      >
+                        {instansi.nama}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value={""} sx={{ fontSize: "small" }}>
+                      Gagal memuat
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
               </FormControl>
               <TextField
@@ -526,7 +550,7 @@ export default function DialogFormRegisterOnCreate({
         </Box>
         {/* Snackbar notify */}
         <Snackbar
-          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+          anchorOrigin={{ horizontal: "center", vertical: "top" }}
           open={apiStatus !== "" ? true : false}
           autoHideDuration={1500}
           message={apiStatus}
