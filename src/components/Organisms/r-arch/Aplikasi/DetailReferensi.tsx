@@ -13,6 +13,7 @@ import FolderCard from "../../../Molecules/Cards/FolderCard";
 import ReferensiPenggunaAplikasi from "./ReferensiPengguna";
 import ErrorFetchWrapper from "../../../Molecules/Errors/ErrorFetchWrapper";
 import ErrorPermission from "../../../Molecules/Errors/ErrorPermission";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 export default function DetailReferensiAplikasi({
   indukReferensi,
@@ -39,8 +40,26 @@ export default function DetailReferensiAplikasi({
   /* FETCH DATA */
   useEffect(() => {
     const getDetailReferensi = async (subRefId: number) => {
+      const checkPermission: any = await Fetcher(
+        SERVICE_HOSTNAME + "/api/v1/refrensi_pengguna",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + Cookies.get("authToken"),
+          },
+        }
+      );
+
+      if (!checkPermission.success) {
+        return setErrorFetch({
+          status: true,
+          detail: checkPermission.message,
+        });
+      }
+
       const requestDetailReferensi: any = await Fetcher(
-        "http://localhost:3000/api/v1/sub_refrensi/" + subRefId + "/detail",
+        SERVICE_HOSTNAME + "/api/v1/sub_refrensi/" + subRefId + "/detail",
         {
           method: "GET",
           headers: {

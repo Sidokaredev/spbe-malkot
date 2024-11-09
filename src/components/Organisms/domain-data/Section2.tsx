@@ -1,18 +1,19 @@
 import { Box, Grid, Typography } from "@mui/material";
-import TableLabel from "/logos/probis-card/table-label.svg"
-import SankeyIcon from "/logos/domain-layanan/sankey-title.svg"
+import TableLabel from "/logos/probis-card/table-label.svg";
+import SankeyIcon from "/logos/domain-layanan/sankey-title.svg";
 import BaseTable from "../Table";
 import ApacheECharts from "../../Molecules/Charts/ApacheECharts";
 import { EChartsOption } from "echarts";
+import { TotalOPD } from "../../../services/api/helpers/data-transforms";
 
-export default function DomainDataSection2() {
+export default function DomainDataSection2({
+  data_opd,
+}: {
+  data_opd: TotalOPD[];
+}) {
   const chartOptions: EChartsOption = {
     tooltip: {},
-    color: [
-      "#0288d1",
-      "#03a9f4",
-      "#4fc3f7",
-    ],
+    color: ["#0288d1", "#03a9f4", "#4fc3f7"],
     series: [
       {
         type: "pie",
@@ -21,11 +22,11 @@ export default function DomainDataSection2() {
         center: ["50%", "50%"],
         itemStyle: {
           borderColor: "#ffffff",
-          borderWidth: 3
+          borderWidth: 3,
         },
         label: {
           show: false,
-          position: "center"
+          position: "center",
         },
         labelLine: {
           show: false,
@@ -33,85 +34,77 @@ export default function DomainDataSection2() {
         data: [
           {
             name: "Terbatas",
-            value: 264
+            value: 264,
           },
           {
             name: "Terbuka",
-            value: 100
+            value: 100,
           },
           {
             name: "Tertutup",
-            value: 14
+            value: 14,
           },
         ],
         emphasis: {
           label: {
             show: false,
-            fontSize: 12
-          }
-        }
-      }
-    ]
-  }
+            fontSize: 12,
+          },
+        },
+      },
+    ],
+  };
   const row_body_data = [
     {
       pic: "Dinas Kesehatan",
-      jumlah: 127
+      jumlah: 127,
     },
     {
       pic: "Dinas Ketahanan Pangan dan Pertanian",
-      jumlah: 68
+      jumlah: 68,
     },
     {
       pic: "Dinas Kesehatan",
-      jumlah: 51
+      jumlah: 51,
     },
     {
       pic: "Dinas Perpustakaan dan Kearsipan",
-      jumlah: 42
+      jumlah: 42,
     },
     {
       pic: "Dinas Lingkungan Hidup",
-      jumlah: 14
+      jumlah: 14,
     },
-  ]
+  ];
 
   const chart_data = [
     {
       label: "Terbatas",
       value: 264,
-      percent: "69.7%"
+      percent: "69.7%",
     },
     {
       label: "Terbuka",
       value: 100,
-      percent: "24.6%"
+      percent: "24.6%",
     },
     {
       label: "Tertutup",
       value: 14,
-      percent: "4%"
+      percent: "4%",
     },
-  ]
+  ];
   return (
     <>
-      <Grid container
-        spacing={2}
-      >
-        <Grid item
-          xs={6}
-        >
-          <Box
-            display={"flex"}
-            alignItems={"center"}
-            marginBottom={1}
-          >
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <Box display={"flex"} alignItems={"center"} marginBottom={1}>
             <Box
               component={"img"}
               src={SankeyIcon}
               sx={{
                 width: 24,
-                height: 24
+                height: 24,
               }}
             />
             <Typography
@@ -125,17 +118,17 @@ export default function DomainDataSection2() {
             </Typography>
           </Box>
           {/* Chart Container */}
-          <Grid container
+          <Grid
+            container
             sx={{
               height: "100%",
             }}
           >
-            <Grid item
-              xs={6}
-            >
+            <Grid item xs={6}>
               <ApacheECharts chartOptions={chartOptions} />
             </Grid>
-            <Grid item
+            <Grid
+              item
               xs={6}
               sx={{
                 display: "flex",
@@ -156,20 +149,14 @@ export default function DomainDataSection2() {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item
-          xs={6}
-        >
-          <Box
-            display={"flex"}
-            alignItems={"center"}
-            marginBottom={1}
-          >
+        <Grid item xs={6}>
+          <Box display={"flex"} alignItems={"center"} marginBottom={1}>
             <Box
               component={"img"}
               src={TableLabel}
               sx={{
                 width: 24,
-                height: 24
+                height: 24,
               }}
             />
             <Typography
@@ -184,7 +171,7 @@ export default function DomainDataSection2() {
           </Box>
           <BaseTable
             row_head_cells={["OPD Penanggung Jawab", "Jumlah"]}
-            row_body_data={row_body_data}
+            row_body_data={data_opd}
             use_cell_pallete_on={1}
             use_row_number={true}
             use_pagination={true}
@@ -193,5 +180,5 @@ export default function DomainDataSection2() {
         </Grid>
       </Grid>
     </>
-  )
+  );
 }

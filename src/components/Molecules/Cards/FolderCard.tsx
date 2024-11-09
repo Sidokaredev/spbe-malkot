@@ -31,6 +31,7 @@ import DialogFormOnUpdate from "./FolderCard/DialogFormOnUpdate";
 import { Fetcher } from "../../../services/request-helpers";
 import Cookies from "js-cookie";
 import DeleteConfirmation from "./DeleteConfirmation";
+import { SERVICE_HOSTNAME } from "../../../services/CONFIG";
 
 export default function FolderCard({
   folderLevel,
@@ -101,7 +102,7 @@ export default function FolderCard({
         return setApiStatus("Invalid Folder Referensi");
     }
     const requestDeletionReferensi = await Fetcher(
-      "http://localhost:3000/api/v1/" + deletePath + "/" + refId,
+      SERVICE_HOSTNAME + "/api/v1/" + deletePath + "/" + refId,
       {
         method: "DELETE",
         headers: {
@@ -247,6 +248,7 @@ export default function FolderCard({
                 sx={{ padding: "0.2em 1em", color: red[300] }}
                 // ARE DISABLED FOR A WHILE...
                 onClick={() => {
+                  console.info("Delete \t:", dataRef.nama);
                   setOnDelete({
                     status: true,
                     data: {

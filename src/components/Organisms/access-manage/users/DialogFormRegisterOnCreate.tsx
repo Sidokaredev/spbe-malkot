@@ -29,6 +29,7 @@ import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
 import { CreatePenggunaBaru } from "../../../../services/validations";
 import { RegisterUserProps } from "../../../../pages/administrator/access-manage/types.declaration";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 type SelectOptionsProps = {
   role: {
@@ -120,7 +121,7 @@ export default function DialogFormRegisterOnCreate({
     setZodErrors({});
 
     const requestCreatePengguna: any = await Fetcher(
-      "http://localhost:3000/api/v1/auth/daftar",
+      SERVICE_HOSTNAME + "/api/v1/auth/daftar",
       {
         method: "POST",
         headers: {
@@ -156,7 +157,7 @@ export default function DialogFormRegisterOnCreate({
   useEffect(() => {
     const getRoleData = async () => {
       const requestData: any = await Fetcher(
-        "http://localhost:3000/api/v1/role",
+        SERVICE_HOSTNAME + "/api/v1/role",
         {
           method: "GET",
           headers: {
@@ -180,7 +181,7 @@ export default function DialogFormRegisterOnCreate({
 
     const getInstansiData = async () => {
       const requestData: any = await Fetcher(
-        "http://localhost:3000/api/v1/instansi",
+        SERVICE_HOSTNAME + "/api/v1/instansi",
         {
           method: "GET",
           headers: {

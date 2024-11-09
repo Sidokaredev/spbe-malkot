@@ -28,6 +28,7 @@ import {
   IndukReferensiProps,
   SubReferensiProps,
 } from "../../../../pages/administrator/r-arch/types.declaration";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 // import DetailReferensi from "./DetailReferensi";
 
 /* Type */
@@ -123,8 +124,13 @@ export default function MenuActionCreate(props: BaseMenuActionProps) {
       return setZodErrors(validating.error.flatten().fieldErrors);
     }
     setZodErrors({});
+    const body = {
+      refrensi_detail_id: dataReferensi.detailReferensi.id,
+      ...formValue,
+    };
+    console.log("body create \t:", body);
     const requestCreateDetailReferensi: any = await Fetcher(
-      "http://localhost:3000/api/v1/refrensi_pengguna",
+      SERVICE_HOSTNAME + "/api/v1/refrensi_pengguna",
       {
         method: "POST",
         headers: {

@@ -20,6 +20,7 @@ import SubReferensiBisnis from "../../../../components/Organisms/r-arch/Bisnis/S
 import ErrorFetchWrapper from "../../../../components/Molecules/Errors/ErrorFetchWrapper";
 import AdministratorServices from "../../../../services/api/v1/administrator";
 import ErrorPermission from "../../../../components/Molecules/Errors/ErrorPermission";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 export default function ArsitekturBisnis() {
   /* STATE */
@@ -41,7 +42,7 @@ export default function ArsitekturBisnis() {
     /* IIFE */
     (async () => {
       const requestIndukReferensiData: any = await Fetcher(
-        "http://localhost:3000/api/v1/refrensi_arsitektur/1/induk", // REFERENSI ARSITEKRUR STILL STATIC
+        SERVICE_HOSTNAME + "/api/v1/refrensi_arsitektur/1/induk", // REFERENSI ARSITEKRUR STILL STATIC
         {
           method: "GET",
           headers: {

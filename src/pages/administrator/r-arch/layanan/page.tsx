@@ -19,6 +19,7 @@ import DialogFormBase from "../../../../components/Molecules/Cards/FolderCard/Di
 import SubReferensiLayanan from "../../../../components/Organisms/r-arch/Layanan/SubReferensi";
 import ErrorFetchWrapper from "../../../../components/Molecules/Errors/ErrorFetchWrapper";
 import ErrorPermission from "../../../../components/Molecules/Errors/ErrorPermission";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 export default function ArsitekturLayanan() {
   /* STATE */
@@ -39,7 +40,7 @@ export default function ArsitekturLayanan() {
   useEffect(() => {
     const getIndukReferensi = async () => {
       const requestIndukReferensiData: any = await Fetcher(
-        "http://localhost:3000/api/v1/refrensi_arsitektur/2/induk",
+        SERVICE_HOSTNAME + "/api/v1/refrensi_arsitektur/2/induk",
         {
           method: "GET",
           headers: {

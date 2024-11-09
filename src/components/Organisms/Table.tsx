@@ -1,4 +1,5 @@
 import {
+  SxProps,
   Table,
   TableBody,
   TableCell,
@@ -30,6 +31,8 @@ type BaseTableType = {
   font_size?: "xx-small" | "x-small" | "small" | "medium" | "large";
   cell_size?: "medium" | "small";
   disable_cell_line?: boolean;
+  disable_display_keys?: string[];
+  cells_width?: SxProps[];
 };
 
 export default function BaseTable({
@@ -46,6 +49,8 @@ export default function BaseTable({
   font_size = "medium",
   cell_size = "medium",
   disable_cell_line = false,
+  disable_display_keys,
+  cells_width,
 }: BaseTableType) {
   /* State */
   /* Table */
@@ -55,7 +60,7 @@ export default function BaseTable({
     console.info("event page change \t: ", event);
   };
 
-  console.info("data length \t: ", row_body_data.length);
+  // console.info("data length \t: ", row_body_data.length);
   return (
     <>
       <TableContainer
@@ -136,6 +141,9 @@ export default function BaseTable({
                         <CircleBullet width={10} height={10} />
                       </TableCell>
                     );
+                    /* disable display props value into table */
+                  } else if (disable_display_keys?.includes(key)) {
+                    return;
                   }
                   return (
                     <TableCell
@@ -143,6 +151,8 @@ export default function BaseTable({
                       sx={{
                         fontSize: font_size,
                         border: disable_cell_line ? "none" : undefined,
+                        // determining cell width by index using SxProps
+                        ...cells_width?.[index],
                       }}
                       key={index}
                     >

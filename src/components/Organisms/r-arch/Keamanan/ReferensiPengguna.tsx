@@ -43,6 +43,7 @@ import TableBodySkeleton from "../../../Skeletons/TableBodySkeleton";
 import DeleteConfirmation from "../../../Molecules/Cards/DeleteConfirmation";
 import ErrorFetchWrapper from "../../../Molecules/Errors/ErrorFetchWrapper";
 import ErrorPermission from "../../../Molecules/Errors/ErrorPermission";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 export default function ReferensiPenggunaKeamanan({
   dataReferensi,
@@ -171,7 +172,7 @@ export default function ReferensiPenggunaKeamanan({
   };
   const deleteSingleItem = async (refPenggunaId: number) => {
     const requestDeletionRefPengguna: any = await Fetcher(
-      "http://localhost:3000/api/v1/refrensi_pengguna/" + refPenggunaId,
+      SERVICE_HOSTNAME + "/api/v1/refrensi_pengguna/" + refPenggunaId,
       {
         method: "DELETE",
         headers: {
@@ -198,7 +199,7 @@ export default function ReferensiPenggunaKeamanan({
 
     selectedItems.forEach((refPenggunaId: number) => {
       const request = Fetcher(
-        "http://localhost:3000/api/v1/refrensi_pengguna/" + refPenggunaId,
+        SERVICE_HOSTNAME + "/api/v1/refrensi_pengguna/" + refPenggunaId,
         {
           method: "DELETE",
           headers: {
@@ -245,8 +246,27 @@ export default function ReferensiPenggunaKeamanan({
   /* FETCH DATA */
   useEffect(() => {
     const getReferensiPengguna = async (detailRefId: number) => {
+      const checkPermission: any = await Fetcher(
+        SERVICE_HOSTNAME + "/api/v1/refrensi_pengguna",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + Cookies.get("authToken"),
+          },
+        }
+      );
+
+      if (!checkPermission.success) {
+        return setErrorFetch({
+          status: true,
+          detail: checkPermission.message,
+        });
+      }
+
       const requestReferensiPenggunaData: any = await Fetcher(
-        "http://localhost:3000/api/v1/refrensi_detail/" +
+        SERVICE_HOSTNAME +
+          "/api/v1/refrensi_detail/" +
           detailRefId +
           "/pengguna",
         {

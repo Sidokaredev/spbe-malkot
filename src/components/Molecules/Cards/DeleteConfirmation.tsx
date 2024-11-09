@@ -38,9 +38,12 @@ export default function DeleteConfirmation({
     matcher: string;
     confirmation: string;
   }>({
-    matcher: "delete-" + onDelete.data.name.split(" ").join("#"),
+    matcher:
+      "delete-" + onDelete.data.name.split(" ").join("#").replace("\r\n", ""),
     confirmation: "",
   });
+  console.info("matcher", onDelete.data.name.split(" ").join("#"));
+  console.info(textConfirmation);
   const [errorConfirmation, setErrorConfirmation] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   /* event handler */
@@ -153,7 +156,8 @@ export default function DeleteConfirmation({
               return setErrorConfirmation("Teks konfirmasi tidak sesuai");
             }
             setErrorConfirmation("");
-            await deleteHandler(onDelete.data.id);
+            const requestDeletion = await deleteHandler(onDelete.data.id);
+            console.info("deletion \t:", requestDeletion);
             setOnDelete({
               status: false,
               data: {

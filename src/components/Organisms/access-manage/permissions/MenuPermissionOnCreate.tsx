@@ -32,6 +32,7 @@ import { ZodErrorsProps } from "../../../../pages/administrator/r-arch/types.dec
 import { CreatePermission } from "../../../../services/validations";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 type FormValueProps = {
   nama: string;
@@ -183,7 +184,7 @@ export default function MenuPermissionOnCreate({
     setZodErrors({});
 
     const requestCreatePermission = await Fetcher(
-      "http://localhost:3000/api/v1/hak_akses",
+      SERVICE_HOSTNAME + "/api/v1/hak_akses",
       {
         method: "POST",
         headers: {

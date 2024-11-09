@@ -37,18 +37,43 @@ import Cookies from "js-cookie";
 import DeleteConfirmation from "../../../../components/Molecules/Cards/DeleteConfirmation";
 import ErrorFetchWrapper from "../../../../components/Molecules/Errors/ErrorFetchWrapper";
 import ErrorPermission from "../../../../components/Molecules/Errors/ErrorPermission";
+import DrawerFormRoleOnUpdate from "../../../../components/Organisms/access-manage/roles/DrawerFormRoleOnUpdate";
 
 type RoleProps = {
   id: number;
   nama: string;
   deskripsi: string;
+  akses: {
+    id: number;
+    nama: string;
+    aksi: string;
+  }[];
   created_at: string;
   updated_at: string;
+};
+
+export type RolePropsBeta = {
+  id: number;
+  name: string;
+  description: string;
+  akses: {
+    id: number;
+    nama: string;
+    aksi: string;
+  }[];
+  created_at: string;
+  updated_at: string;
+  // permissions: {
+  //   role_id: number;
+  //   permission_id: number;
+  // }[];
 };
 
 export default function ManageRoles() {
   /* state */
   const [roles, setRoles] = useState<RoleProps[] | null>(null);
+  const [role, setRole] = useState<RoleProps | null>(null);
+  console.log("edited role \t:", role);
   const [openDrawer, setOpenDrawer] = useState<{
     create: boolean;
     update: boolean;
@@ -294,21 +319,33 @@ export default function ManageRoles() {
                               gap: "0.3em 0.5em",
                             }}
                           >
-                            <Chip
-                              label={"role"}
-                              variant="outlined"
-                              size="small"
-                              sx={{
-                                backgroundColor: lightBlue[50],
-                                color: lightBlue[700],
-                                borderColor: lightBlue[400],
-                              }}
-                            />
+                            {role.akses.map((akses, index) => (
+                              <Chip
+                                key={index}
+                                label={akses.nama}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                  backgroundColor: lightBlue[50],
+                                  color: lightBlue[700],
+                                  borderColor: lightBlue[400],
+                                }}
+                              />
+                            ))}
                           </Box>
                         </TableCell>
                         <TableCell size="small">
                           <Tooltip title="Edit" placement="left">
-                            <IconButton size="small">
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setOpenDrawer((prev) => ({
+                                  ...prev,
+                                  update: true,
+                                }));
+                                setRole(role);
+                              }}
+                            >
                               <EditNote fontSize="small" />
                             </IconButton>
                           </Tooltip>
@@ -390,6 +427,15 @@ export default function ManageRoles() {
           autoHideDuration={1500}
           onClose={snackbarOnClose}
         />
+        {/* Drawer Form on Update */}
+        {openDrawer.update && role !== null && (
+          <DrawerFormRoleOnUpdate
+            openDrawer={openDrawer.update}
+            setOpenDrawer={setOpenDrawer}
+            setDataAction={setDataAction}
+            role={role}
+          />
+        )}
       </Box>
     </DashboardAdminLayout>
   );

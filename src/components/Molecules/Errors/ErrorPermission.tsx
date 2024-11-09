@@ -9,7 +9,8 @@ export default function ErrorPermission({
   errorDetail: string;
   sxProps?: SxProps;
 }) {
-  console.info(sxProps);
+  /* debug style */
+  // console.info(sxProps);
   return (
     <Box
       component={"div"}

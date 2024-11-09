@@ -1,10 +1,16 @@
-import { Grid } from "@mui/material"
-import CountCard from "../../Molecules/Cards/CountCard"
-import CountDomainLayananCard from "/logos/domain-layanan/jumlah-layanan.svg"
-import CountCardChart from "../../Molecules/Cards/CountCardChart"
-import { EChartsOption } from "echarts"
+import { Grid } from "@mui/material";
+import CountCard from "../../Molecules/Cards/CountCard";
+import CountDomainLayananCard from "/logos/domain-layanan/jumlah-layanan.svg";
+import CountCardChart from "../../Molecules/Cards/CountCardChart";
+import { EChartsOption } from "echarts";
 
-export default function DomainLayananSection1() {
+type CardData = {
+  jumlah_layanan?: number;
+  jumlah_layanan_terdigitalisasi?: number;
+  chart_digitalisasi_layanan?: any;
+};
+
+export default function DomainLayananSection1(data: CardData) {
   const chartOptions: EChartsOption = {
     title: {
       text: "Digitalisasi Layanan",
@@ -12,20 +18,17 @@ export default function DomainLayananSection1() {
         color: "white",
         fontWeight: "normal",
         fontFamily: "Poppins",
-        fontSize: 14
+        fontSize: 14,
       },
       right: "10%",
       left: "10%",
       top: "5%",
       bottom: "5%",
     },
-    color: [
-      "#0288d1",
-      "#03a9f4",
-    ],
+    color: ["#0288d1", "#03a9f4"],
     tooltip: {
       show: true,
-      formatter: '{a} <br/>{b} : {c}%'
+      formatter: "{a} <br/>{b} : {c}%",
     },
     series: [
       {
@@ -42,7 +45,7 @@ export default function DomainLayananSection1() {
           {
             value: 40,
             itemStyle: {},
-          }
+          },
         ],
         min: 0,
         max: 100,
@@ -51,15 +54,15 @@ export default function DomainLayananSection1() {
           show: true,
           roundCap: false,
           lineStyle: {
-            width: 35
-          }
+            width: 35,
+          },
         },
         progress: {
           show: true,
           overlap: false,
           width: 35,
           roundCap: false,
-          clip: false
+          clip: false,
         },
         splitLine: {
           show: false,
@@ -76,12 +79,12 @@ export default function DomainLayananSection1() {
         anchor: {
           show: false,
           showAbove: true,
-          icon: "triangle"
+          icon: "triangle",
         },
         itemStyle: {},
         emphasis: {
           disabled: false,
-          itemStyle: {}
+          itemStyle: {},
         },
         title: {
           show: false,
@@ -99,38 +102,30 @@ export default function DomainLayananSection1() {
           fontSize: "24",
           offsetCenter: ["0", "0"],
           formatter: (value: string | number) => `${value}%`,
-        }
-      }
-    ]
-  }
+        },
+      },
+    ],
+  };
   return (
     <>
-      <Grid container
-        spacing={2}
-      >
-        <Grid item
-          xs={3}
-        >
+      <Grid container spacing={2}>
+        <Grid item xs={3}>
           <CountCard
             icon={CountDomainLayananCard}
             title="Jumlah Layanan"
-            data={300}
+            data={data.jumlah_layanan ?? 0}
             date={"12 Agustus 2024"}
           />
         </Grid>
-        <Grid item
-          xs={3}
-        >
+        <Grid item xs={3}>
           <CountCard
             icon={CountDomainLayananCard}
             title={"Layanan yang Terdigitalisasi"}
-            data={183}
+            data={data.jumlah_layanan_terdigitalisasi ?? 0}
             date={"12 Agustus 2024"}
           />
         </Grid>
-        <Grid item
-          xs={6}
-        >
+        <Grid item xs={6}>
           {/* Count Card Chart */}
           <CountCardChart
             chartOptions={chartOptions}
@@ -144,5 +139,5 @@ export default function DomainLayananSection1() {
         </Grid>
       </Grid>
     </>
-  )
+  );
 }

@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import { BaseFields } from "../../../../services/validations";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 export default function DialogFormOnCreate({
   folderLevel,
@@ -119,7 +120,7 @@ export default function DialogFormOnCreate({
         return setApiStatus("Invalid folder level");
     }
     const requestDataUpdate: any = await Fetcher(
-      "http://localhost:3000/api/v1/" + postPath,
+      SERVICE_HOSTNAME + "/api/v1/" + postPath,
       {
         method: "POST",
         headers: {
@@ -175,7 +176,8 @@ export default function DialogFormOnCreate({
           return setApiStatus("Invalid Folder Level!");
       }
       const requestDataRefLength: any = await Fetcher(
-        "http://localhost:3000/api/v1/" +
+        SERVICE_HOSTNAME +
+          "/api/v1/" +
           prefixPath +
           "/" +
           indukRefId +

@@ -1,7 +1,8 @@
 import { SignInProps } from "../../pages/accounts/auth/page";
+import { SERVICE_HOSTNAME } from "../CONFIG";
 
 async function AuthApi(signInData: SignInProps) {
-  const request = await fetch("http://localhost:3000/api/v1/auth/masuk", {
+  const request = await fetch(SERVICE_HOSTNAME + "/api/v1/auth/masuk", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

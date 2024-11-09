@@ -28,6 +28,7 @@ import {
   IndukReferensiProps,
   SubReferensiProps,
 } from "../../../../pages/administrator/r-arch/types.declaration";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 /* Type */
 type CreateReferensiPenggunaForm = {
@@ -142,7 +143,7 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
     }
     setZodErrors({});
     const requestUpdateReferensiPengguna: any = await Fetcher(
-      "http://localhost:3000/api/v1/refrensi_pengguna/" + refPengguna?.id,
+      SERVICE_HOSTNAME + "/api/v1/refrensi_pengguna/" + refPengguna?.id,
       {
         method: "PATCH",
         headers: {
@@ -175,7 +176,7 @@ export default function MenuActionUpdate(props: BaseMenuActionProps) {
   // const getRefrensiPenggunaDetail = async (refPenggunaId: number) => {
   //   setLoading(true);
   //   const requestData: any = await Fetcher(
-  //     "http://localhost:3000/api/v1/refrensi_pengguna/" + refPenggunaId,
+  //     SERVICE_HOSTNAME + "/api/v1/refrensi_pengguna/" + refPenggunaId,
   //     {
   //       method: "GET",
   //       headers: {

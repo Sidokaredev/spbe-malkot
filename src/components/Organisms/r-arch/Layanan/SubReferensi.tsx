@@ -12,6 +12,7 @@ import FolderCard from "../../../Molecules/Cards/FolderCard";
 import DetailReferensiLayanan from "./DetailReferensi";
 import ErrorFetchWrapper from "../../../Molecules/Errors/ErrorFetchWrapper";
 import ErrorPermission from "../../../Molecules/Errors/ErrorPermission";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 export default function SubReferensiLayanan({
   indukReferensi,
@@ -36,8 +37,26 @@ export default function SubReferensiLayanan({
   /* FETCH DATA */
   useEffect(() => {
     const getSubReferensi = async (indukRefId: number) => {
+      const checkPermission: any = await Fetcher(
+        SERVICE_HOSTNAME + "/api/v1/sub_refrensi",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + Cookies.get("authToken"),
+          },
+        }
+      );
+
+      if (!checkPermission.success) {
+        return setErrorFetch({
+          status: true,
+          detail: checkPermission.message,
+        });
+      }
+
       const requestSubReferensiData: any = await Fetcher(
-        "http://localhost:3000/api/v1/induk_refrensi/" + indukRefId + "/sub",
+        SERVICE_HOSTNAME + "/api/v1/induk_refrensi/" + indukRefId + "/sub",
         {
           method: "GET",
           headers: {

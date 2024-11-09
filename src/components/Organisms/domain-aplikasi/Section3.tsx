@@ -5,8 +5,16 @@ import BaseTable from "../Table";
 import { EChartsOption } from "echarts";
 import { lightBlue } from "@mui/material/colors";
 import ApacheECharts from "../../Molecules/Charts/ApacheECharts";
+import {
+  Catalog,
+  TotalOPD,
+} from "../../../services/api/helpers/data-transforms";
 
-export default function DomainAplikasiSection3() {
+export default function DomainAplikasiSection3({
+  data_opd,
+}: {
+  data_opd: TotalOPD[];
+}) {
   const chartOptions: EChartsOption = {
     tooltip: {},
     series: {
@@ -195,7 +203,7 @@ export default function DomainAplikasiSection3() {
           {/* Table */}
           <BaseTable
             row_head_cells={["Perangkat Daerah", "Jumlah"]}
-            row_body_data={row_body_data}
+            row_body_data={data_opd}
             use_row_number={true}
             use_cell_pallete_on={1}
             use_pagination={true}

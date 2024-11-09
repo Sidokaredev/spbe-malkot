@@ -2,7 +2,6 @@ import {
   AddModeratorRounded,
   AddRounded,
   DeleteRounded,
-  InfoRounded,
 } from "@mui/icons-material";
 import {
   Box,
@@ -14,7 +13,6 @@ import {
   FormHelperText,
   IconButton,
   InputLabel,
-  Menu,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -45,6 +43,7 @@ import {
   ActionChipNameCreator,
   PermissionNameCreator,
 } from "../../../../pages/administrator/access-manage/helpers";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 type FormValueProps = {
   nama: string;
@@ -203,7 +202,7 @@ export default function DrawerFormRoleOnCreate({
     setZodErrors({});
 
     const requestRoleCreate: any = await Fetcher(
-      "http://localhost:3000/api/v1/role",
+      SERVICE_HOSTNAME + "/api/v1/role",
       {
         method: "POST",
         headers: {
@@ -222,7 +221,7 @@ export default function DrawerFormRoleOnCreate({
     let assignPermissionCollection: Promise<any>[] = [];
     Object.values(permissionsValidating.data).forEach((permission) => {
       const requestAssignPermission = Fetcher(
-        "http://localhost:3000/api/v1/hak_akses/assign",
+        SERVICE_HOSTNAME + "/api/v1/hak_akses/assign",
         {
           method: "POST",
           headers: {
@@ -258,7 +257,7 @@ export default function DrawerFormRoleOnCreate({
   useEffect(() => {
     (async () => {
       const requestHakAkses = await Fetcher(
-        "http://localhost:3000/api/v1/hak_akses",
+        SERVICE_HOSTNAME + "/api/v1/hak_akses",
         {
           method: "GET",
           headers: {

@@ -20,6 +20,7 @@ import { ZodErrorsProps } from "../../../../pages/administrator/r-arch/types.dec
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
 import { UpdatePengguna } from "../../../../services/validations";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 export default function DialogFormRegisterOnUpdate({
   openDialog,
@@ -115,7 +116,7 @@ export default function DialogFormRegisterOnUpdate({
     setZodErrors({});
 
     const requestCreatePengguna: any = await Fetcher(
-      "http://localhost:3000/api/v1/user/" + formValue.id,
+      SERVICE_HOSTNAME + "/api/v1/user/" + formValue.id,
       {
         method: "PATCH",
         headers: {
@@ -153,7 +154,7 @@ export default function DialogFormRegisterOnUpdate({
   useEffect(() => {
     const getRoleData = async () => {
       // const requestData: any = await Fetcher(
-      //   "http://localhost:3000/api/v1/role",
+      //   SERVICE_HOSTNAME + "/api/v1/role",
       //   {
       //     method: "GET",
       //     headers: {
@@ -174,7 +175,7 @@ export default function DialogFormRegisterOnUpdate({
 
     const getInstansiData = async () => {
       // const requestData: any = await Fetcher(
-      //   "http://localhost:3000/api/v1/instansi",
+      //   SERVICE_HOSTNAME + "/api/v1/instansi",
       //   {
       //     method: "GET",
       //     headers: {

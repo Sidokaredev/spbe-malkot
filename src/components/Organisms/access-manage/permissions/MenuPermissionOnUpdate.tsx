@@ -31,6 +31,7 @@ import { ZodErrorsProps } from "../../../../pages/administrator/r-arch/types.dec
 import { UpdatePermission } from "../../../../services/validations";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 type FormValueProps = {
   nama: string;
@@ -181,7 +182,7 @@ export default function MenuPermissionOnUpdate({
     setZodErrors({});
 
     const requestUpdatePermission = await Fetcher(
-      "http://localhost:3000/api/v1/hak_akses/" + selectedToEdit.id,
+      SERVICE_HOSTNAME + "/api/v1/hak_akses/" + selectedToEdit.id,
       {
         method: "PATCH",
         headers: {

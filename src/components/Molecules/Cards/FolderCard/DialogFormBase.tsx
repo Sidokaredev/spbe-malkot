@@ -20,6 +20,7 @@ import { grey } from "@mui/material/colors";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
 import { CreateIndukReferensi } from "../../../../services/validations";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 export default function DialogFormBase({
   referensiArsitekturId,
@@ -85,7 +86,7 @@ export default function DialogFormBase({
     setZodErrors({});
 
     const requestIndukReferensiCreate: any = await Fetcher(
-      "http://localhost:3000/api/v1/induk_refrensi",
+      SERVICE_HOSTNAME + "/api/v1/induk_refrensi",
       {
         method: "POST",
         headers: {
@@ -117,7 +118,8 @@ export default function DialogFormBase({
     const getIndukRefLength = async () => {
       setLoading(true);
       const requestIndukRefLength: any = await Fetcher(
-        "http://localhost:3000/api/v1/refrensi_arsitektur/" +
+        SERVICE_HOSTNAME +
+          "/api/v1/refrensi_arsitektur/" +
           referensiArsitekturId +
           "/induk", // REFERENSI ARSITEKRUR STILL STATIC
         {

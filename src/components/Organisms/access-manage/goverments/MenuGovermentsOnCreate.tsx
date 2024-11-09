@@ -16,6 +16,7 @@ import { ZodErrorsProps } from "../../../../pages/administrator/r-arch/types.dec
 import { CreateGoverment } from "../../../../services/validations";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 type FormValueProps = {
   nama: string;
@@ -75,7 +76,7 @@ export default function MenuGovermentOnCreate({
     setZodErrors({});
 
     const requestCreatePermission = await Fetcher(
-      "http://localhost:3000/api/v1/instansi",
+      SERVICE_HOSTNAME + "/api/v1/instansi",
       {
         method: "POST",
         headers: {

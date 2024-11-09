@@ -47,8 +47,19 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 async function Fetcher(endpoint: string, init?: RequestInit) {
   let request: any = await fetch(endpoint, init);
   request = await request.json();
-  await delay(1000);
+  await delay(500);
   return request;
 }
 
-export { FetcherWraped, Fetcher };
+async function FetcherV2(endpoint: string, init?: RequestInit): Promise<any> {
+  try {
+    let request: any = await fetch(endpoint, init);
+    request = await request.json();
+    await delay(1000);
+    return request;
+  } catch (err) {
+    return err;
+  }
+}
+
+export { FetcherWraped, Fetcher, FetcherV2 };

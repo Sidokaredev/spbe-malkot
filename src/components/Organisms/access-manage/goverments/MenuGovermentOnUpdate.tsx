@@ -35,6 +35,7 @@ import {
 } from "../../../../services/validations";
 import { Fetcher } from "../../../../services/request-helpers";
 import Cookies from "js-cookie";
+import { SERVICE_HOSTNAME } from "../../../../services/CONFIG";
 
 type FormValueProps = {
   nama: string;
@@ -94,7 +95,7 @@ export default function MenuGovermentOnUpdate({
     setZodErrors({});
 
     const requestUpdatePermission = await Fetcher(
-      "http://localhost:3000/api/v1/instansi/" + selectedToEdit.id,
+      SERVICE_HOSTNAME + "/api/v1/instansi/" + selectedToEdit.id,
       {
         method: "PATCH",
         headers: {

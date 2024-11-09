@@ -21,7 +21,7 @@ export default function ApacheECharts({
 
   /* useEffect */
   useEffect(() => {
-    console.info("Apache ECharts");
+    // console.info("Apache ECharts");
     if (chartContainerRef.current) {
       chartInstanceRef.current = echarts.init(chartContainerRef.current, null, {
         width: "auto",
