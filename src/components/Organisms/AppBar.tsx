@@ -57,7 +57,7 @@ export default function BaseAppBar() {
             <BaseDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer} />
             <Typography>Arsitektur SPBE Kota Malang</Typography>
           </Box>
-          <Box
+          {/* <Box
             sx={{
               width: 45,
               height: 45,
@@ -69,19 +69,20 @@ export default function BaseAppBar() {
               marginX: "1em",
             }}
           >
-            <Box
-              component={"img"}
-              src={SPBE}
-              width={40}
-              height={40}
-              sx={
-                {
-                  // backgroundColor: "white",
-                  // padding: "0.5em"
-                }
+          </Box> */}
+          <Box
+            component={"img"}
+            src={SPBE}
+            width={35}
+            height={35}
+            sx={
+              {
+                backgroundColor: "white",
+                // padding: "0.5em"
+                borderRadius: "2em"
               }
-            />
-          </Box>
+            }
+          />
         </Toolbar>
       </AppBar>
     </>

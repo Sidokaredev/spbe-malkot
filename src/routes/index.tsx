@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import HomePage from "../pages/page";
 import prosesBisnisRoute from "./domain-probis";
 import domainLayananRoute from "./domain-layanan";
@@ -16,6 +16,9 @@ const AppRouter = createBrowserRouter(
     {
       path: "/",
       element: <HomePage />,
+      loader: () => {
+        return redirect("/domain-probis")
+      },
       children: [
         // ...prosesBisnisRoute
       ],

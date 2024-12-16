@@ -1,13 +1,13 @@
 import { Apps, Assistant, Map, MiscellaneousServices, ModelTraining, Storage } from "@mui/icons-material"
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, Toolbar, Typography } from "@mui/material"
-import { lightBlue } from "@mui/material/colors"
+import { grey, lightBlue } from "@mui/material/colors"
 import React from "react"
 import { Link as RouterLink, useLocation } from "react-router-dom"
 
 export default function BaseDrawer({
   openDrawer,
   setOpenDrawer,
-} : {
+}: {
   openDrawer: boolean
   setOpenDrawer: React.Dispatch<React.SetStateAction<boolean>>
 }) {
@@ -55,7 +55,7 @@ export default function BaseDrawer({
 
   /* Helpers */
   const currentPath = (path: string) => {
-    if(location.pathname === path) {
+    if (location.pathname === path) {
       return true
     }
     return false;
@@ -82,7 +82,14 @@ export default function BaseDrawer({
               key={index}
               disablePadding
               sx={{
-                borderLeft: currentPath(list.path) ? "0.2em solid #0288d1" : "0.2em solid transparent",
+                borderLeft: "0.2em solid transparent",
+                borderRight: currentPath(list.path) ? "0.2em solid #0288d1" : "0.2em solid transparent",
+                "&.MuiListItem-root": {
+                  ":hover": {
+                    backgroundColor: currentPath(list.path) ? undefined : grey[100]
+                  }
+                  // backgroundColor: "green"
+                }
               }}
             >
               <ListItemButton
@@ -104,6 +111,7 @@ export default function BaseDrawer({
                 <Typography
                   sx={{
                     color: currentPath(list.path) ? lightBlue[700] : undefined,
+                    fontWeight: currentPath(list.path) ? 550 : undefined
                   }}
                 >
                   {list.name}

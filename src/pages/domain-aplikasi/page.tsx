@@ -116,7 +116,7 @@ export default function DomainAplikasi() {
           marginBottom: "1em",
         }}
       >
-        <Box
+        {/* <Box
           component={"section"}
           className="domain-aplikasi-section1"
           sx={{
@@ -144,7 +144,7 @@ export default function DomainAplikasi() {
           }}
         >
           <DomainAplikasiSection3 data_opd={DomainAplikasi.data_opd} />
-        </Box>
+        </Box> */}
         <Box
           component={"section"}
           className="domain-aplikasi-section4"
@@ -152,9 +152,7 @@ export default function DomainAplikasi() {
             marginBottom: "1em",
           }}
         >
-          <DomainAplikasiSection4
-            data_catalog={DomainAplikasi.data_catalog_aplikasi}
-          />
+          <DomainAplikasiSection4 />
         </Box>
       </Box>
     </DashboardLayout>

@@ -1,62 +1,156 @@
-import { Box, Typography } from "@mui/material";
-import BaseTable from "../Table";
-import { Inventory2 } from "@mui/icons-material";
-import { lightBlue } from "@mui/material/colors";
-import { Catalog } from "../../../services/api/helpers/data-transforms";
+import { Alert, Box, Button, Typography } from "@mui/material";
+import BaseTable, { DynamicRowBodyData } from "../Table";
+import { Inventory2, Refresh } from "@mui/icons-material";
+import { grey, lightBlue } from "@mui/material/colors";
+import { useEffect, useState } from "react";
+import { KatalogProsesBisnisDataType } from "../../../services/types";
+import { API } from "../../../services/request-helpers";
+import TableBodySkeleton from "../../Skeletons/TableBodySkeleton";
 
-export default function ProsesBisnisSection4({
-  data_catalog,
-}: {
-  data_catalog: Catalog[];
-}) {
-  /* static data */
-  const cells = [
-    "Nama Proses Bisnis",
-    "Sektor Pemerintahan",
-    "Urusan Pemerintahan",
-    "Sub Urusan",
-    "OPD",
-  ];
+const CollapseTriggerButton: React.FC<{
+  indexOfRow: number,
+  collapse: Record<number, boolean>,
+  setCollapse: React.Dispatch<React.SetStateAction<Record<number, boolean>>>
+}> = ({ indexOfRow, collapse, setCollapse }) => {
+  return (
+    <Button
+      variant={"text"}
+      size="small"
+      color={collapse[indexOfRow] ? "error" : undefined}
+      onClick={() => {
+        setCollapse(prev => ({
+          ...prev,
+          [indexOfRow]: !prev[indexOfRow]
+        }))
+      }}
+      sx={{
+        textTransform: "none",
+      }}
+    >
+      {collapse[indexOfRow] ? "Tutup" : "Lihat"}
+    </Button>
+  )
+}
 
-  const tableData = [
-    {
-      name: "Perencanaan",
-      sektor: "RAB.02 Ekonomi dan Industri",
-      urusan: "RAB.02 Industri",
-      sub: "RAB.03.03.04",
-      opd: "Dinas Perhubungan",
-    },
-    {
-      name: "Perencanaan",
-      sektor: "RAB.02 Ekonomi dan Industri",
-      urusan: "RAB.02 Industri",
-      sub: "RAB.03.03.04",
-      opd: "Dinas Perhubungan",
-    },
-    {
-      name: "Perencanaan",
-      sektor: "RAB.02 Ekonomi dan Industri",
-      urusan: "RAB.02 Industri",
-      sub: "RAB.03.03.04",
-      opd: "Dinas Perhubungan",
-    },
-    {
-      name: "Perencanaan",
-      sektor: "RAB.02 Ekonomi dan Industri",
-      urusan: "RAB.02 Industri",
-      sub: "RAB.03.03.04",
-      opd: "Dinas Perhubungan",
-    },
-    {
-      name: "Perencanaan",
-      sektor: "RAB.02 Ekonomi dan Industri",
-      urusan: "RAB.02 Industri",
-      sub: "RAB.03.03.04",
-      opd: "Dinas Perhubungan",
-    },
-  ];
+const CollapsedComponent: React.FC<{ dataCell: DynamicRowBodyData }> = ({ dataCell }) => {
+  console.log(dataCell)
+  return (
+    <Box component={"div"}
+      sx={{
+        marginY: 2
+      }}
+    >
+      <Typography component={"div"}
+        variant="subtitle2"
+        sx={{
+          fontWeight: 550,
+          color: grey[700],
+          marginBottom: 1
+        }}
+      >
+        Referensi
+      </Typography>
+      <BaseTable
+        row_head_color={grey[200]}
+        row_head_font_color="black"
+        cell_size="small"
+        font_size="small"
+        row_head_cells={[
+          "Unit Kerja",
+          "RAB Level 1",
+          "RAB Level 2",
+          "RAB Level 3",
+          "RAB Level 4",
+          "Instansi"
+        ]}
+        data_orders="defined"
+        row_body_data={[dataCell]}
+        display_key_orders={[
+          "unit_kerja",
+          "rab_level_1",
+          "rab_level_2",
+          "rab_level_3",
+          "rab_level_4",
+          "instansi"
+        ]}
+      />
+    </Box>
+  )
+}
+
+export default function ProsesBisnisSection4() {
+  /* state */
+  const [katalog, setKatalog] = useState<KatalogProsesBisnisDataType[] | null>(null)
+  const [error, setError] = useState<{ sign: boolean, message: string }>({
+    sign: false,
+    message: ""
+  })
+  const [refetch, setRefetch] = useState<boolean>(false)
+  /* event handler */
+  const refreshOnClick = () => {
+    setError({ sign: false, message: "" })
+    setRefetch(prev => !prev)
+  }
+  /* fetching */
+  useEffect(() => {
+    (async () => {
+      const [data, fail] = await API<KatalogProsesBisnisDataType[]>(
+        "no-body",
+        "/api/v1/public/probis",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      )
+
+      if (fail) {
+        console.log("fail request \t:", fail)
+        return setError({ sign: true, message: `katalog proses bisnis: ${fail.message}` })
+      }
+
+      if (data) {
+        console.log("data \t:", data)
+        return setKatalog(data)
+      }
+    })()
+  }, [refetch])
   return (
     <>
+      {error.sign && (
+        <Alert
+          severity="error"
+          sx={{
+            marginBottom: "1em",
+            ".MuiAlert-message": {
+              width: "100%",
+            },
+          }}
+        >
+          <Box
+            component={"div"}
+            sx={{
+              display: "flex",
+            }}
+          >
+            <Box component={"div"} flexGrow={1}>
+              {error.message}
+            </Box>
+            <Box component={"div"}>
+              <Button
+                size="small"
+                endIcon={
+                  <Refresh fontSize="small" sx={{ color: lightBlue[700] }} />
+                }
+                onClick={refreshOnClick}
+              >
+                Refresh
+              </Button>
+            </Box>
+          </Box>
+        </Alert>
+      )}
       <Box
         component={"div"}
         sx={{
@@ -72,12 +166,43 @@ export default function ProsesBisnisSection4({
         </Typography>
       </Box>
       <BaseTable
-        row_head_cells={cells}
-        row_body_data={data_catalog}
+        cell_size="small"
+        font_size="small"
+        row_selected
+        row_head_cells={[
+          "Nama Bisnis",
+          "Sasaran Strategis",
+          "Indikator Kinerja Utama",
+          "Target",
+          "Terealisasi",
+          "Aksi"
+        ]}
+        cells_width={{
+          "indikator": { width: "20%" }
+        }}
+        data_orders="defined"
+        row_body_data={katalog}
+        display_key_orders={[
+          "nama",
+          "sasaran",
+          "indikator",
+          "nilai_iku_target",
+          "nilai_iku_terealisasi"
+        ]}
+        useCollapse
+        CollapseTriggerButton={CollapseTriggerButton}
+        CollapsedComponent={CollapsedComponent}
         use_pagination={true}
         use_row_number={true}
-        font_size="small"
-        disable_display_keys={["kode"]}
+        skeleton={<TableBodySkeleton
+          skeletonCells={[
+            { size: "vshort" },
+            { size: "medium" },
+            { size: "long" },
+            { size: "long" },
+            { size: "medium" },
+            { size: "long" },
+          ]} />}
       />
     </>
   );

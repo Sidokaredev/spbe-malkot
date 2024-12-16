@@ -66,8 +66,8 @@ export default function DomainLayanan() {
     (async () => {
       let requestDomainLayananData: any = await FetcherV2(
         SERVICE_HOSTNAME +
-          "/api/v1/public/refrensi_arsitektur/" +
-          ID_DOMAINlAYANAN
+        "/api/v1/public/refrensi_arsitektur/" +
+        ID_DOMAINlAYANAN
       );
 
       if (requestDomainLayananData instanceof Error) {
@@ -155,7 +155,7 @@ export default function DomainLayanan() {
             </Box>
           </Alert>
         )}
-        <Box
+        {/* <Box
           component={"section"}
           className="section1"
           sx={{
@@ -194,7 +194,7 @@ export default function DomainLayanan() {
           }}
         >
           <DomainLayananSection4 />
-        </Box>
+        </Box> */}
         <Box
           component={"section"}
           className="section5"
@@ -202,9 +202,7 @@ export default function DomainLayanan() {
             marginBottom: "1em",
           }}
         >
-          <DomainLayananSection5
-            data_catalog={DomainLayanan.data_catalog_layanan}
-          />
+          <DomainLayananSection5 />
         </Box>
       </Box>
     </DashboardLayout>

@@ -4,7 +4,7 @@ import BaseAppBar from "../components/Organisms/AppBar";
 import SideBarFilter from "../components/Organisms/SidebarFilter";
 import { ItemsListType } from "../components/Molecules/ExpandableList";
 
-export default function DashboardLayout({ itemList, children } : { itemList: ItemsListType[], children?: React.ReactNode }) {
+export default function DashboardLayout({ itemList, children }: { itemList: ItemsListType[], children?: React.ReactNode }) {
   return (
     <>
       <Box

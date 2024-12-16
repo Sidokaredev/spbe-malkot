@@ -151,7 +151,7 @@ export default function DomainData() {
             </Box>
           </Alert>
         )}
-        <Box
+        {/* <Box
           component={"section"}
           className="domain-data-section1"
           sx={{
@@ -179,7 +179,7 @@ export default function DomainData() {
           }}
         >
           <DomainDataSection3 />
-        </Box>
+        </Box> */}
         <Box
           component={"section"}
           className="domain-data-section4"
@@ -187,7 +187,7 @@ export default function DomainData() {
             marginBottom: "1em",
           }}
         >
-          <DomainDataSection4 data_catalog={DomainData.data_catalog_data} />
+          <DomainDataSection4 />
         </Box>
       </Box>
     </DashboardLayout>

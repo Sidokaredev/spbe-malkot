@@ -58,8 +58,8 @@ export default function DomainProsesBisnis() {
     (async () => {
       let requestDomainProbisData = await FetcherV2(
         SERVICE_HOSTNAME +
-          "/api/v1/public/refrensi_arsitektur/" +
-          ID_DOMAINPROSESBISNIS
+        "/api/v1/public/refrensi_arsitektur/" +
+        ID_DOMAINPROSESBISNIS
       );
       if (requestDomainProbisData instanceof Error) {
         setErrorSign({ sign: true, message: requestDomainProbisData.message });
@@ -149,7 +149,7 @@ export default function DomainProsesBisnis() {
             </Box>
           </Alert>
         )}
-        <Box component={"section"} className="section1">
+        {/* <Box component={"section"} className="section1">
           <ProsesBisnisSection1
             jumlah_opd_pemilik_probis={DomainProbis.card_jumlah_opd_probis}
           />
@@ -159,11 +159,9 @@ export default function DomainProsesBisnis() {
         </Box>
         <Box component={"section"} className="section3" marginTop={3}>
           <ProsesBisnisSection3 />
-        </Box>
+        </Box> */}
         <Box component={"section"} className="section4" marginTop={3}>
-          <ProsesBisnisSection4
-            data_catalog={DomainProbis.data_catalog_probis}
-          />
+          <ProsesBisnisSection4 />
         </Box>
       </Box>
     </DashboardLayout>

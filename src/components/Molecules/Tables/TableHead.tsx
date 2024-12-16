@@ -1,4 +1,4 @@
-import { TableCell, TableRow } from "@mui/material"
+import { SxProps, TableCell, TableRow } from "@mui/material"
 
 type TableHeadProps = {
   cells: string[]
@@ -10,10 +10,10 @@ type TableHeadProps = {
 }
 
 export default function BaseTableHead(rowProps: TableHeadProps) {
-  const cellStyles = {
+  const cellStyles: SxProps = {
     color: rowProps.font_color,
-    border: "none",
-    fontSize: rowProps.font_size
+    // border: "none",
+    fontSize: rowProps.font_size,
   }
   return (
     <TableRow
@@ -22,7 +22,7 @@ export default function BaseTableHead(rowProps: TableHeadProps) {
       }}
     >
       {rowProps.use_row_number &&
-      <TableCell sx={cellStyles}>No.</TableCell>
+        <TableCell sx={cellStyles}>No.</TableCell>
       }
       {rowProps.cells.map((cell, index) => (
         <TableCell

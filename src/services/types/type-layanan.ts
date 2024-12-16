@@ -1,0 +1,22 @@
+export type KatalogLayananDataType = {
+  nama: string,
+  tujuan: string,
+  fungsi: string,
+  penanggung_jawab: string,
+  unit_pelaksana: string,
+  kementrian_terkait: string,
+  urusan_pemerintahan_terkait: string,
+  target_layanan: string,
+  metode_layanan: string,
+  potensi_manfaat: string,
+  potensi_ekonomi: string,
+  potensi_resiko: string,
+  mitigasi_resiko: string,
+  proses_bisnis: string,
+  ral_level_1: string,
+  ral_level_2: string,
+  ral_level_3: string,
+  ral_level_4: string,
+  instansi: string,
+  unit_kerja: string
+}
