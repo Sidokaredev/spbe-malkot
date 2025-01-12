@@ -4,7 +4,17 @@ import BaseAppBar from "../components/Organisms/AppBar";
 import SideBarFilter from "../components/Organisms/SidebarFilter";
 import { ItemsListType } from "../components/Molecules/ExpandableList";
 
-export default function DashboardLayout({ itemList, children }: { itemList: ItemsListType[], children?: React.ReactNode }) {
+export default function DashboardLayout({
+  itemList,
+  checkedState,
+  setCheckedState,
+  children
+}: {
+  itemList: ItemsListType[],
+  checkedState: { id: number, nama: string };
+  setCheckedState: React.Dispatch<React.SetStateAction<{ id: number, nama: string }>>
+  children?: React.ReactNode
+}) {
   return (
     <>
       <Box
@@ -37,7 +47,11 @@ export default function DashboardLayout({ itemList, children }: { itemList: Item
             }}
           >
             {/* SIDEBAR FILTER */}
-            <SideBarFilter itemList={itemList} />
+            <SideBarFilter
+              itemList={itemList}
+              checkedState={checkedState}
+              setCheckedState={setCheckedState}
+            />
           </Grid>
           <Grid item
             xs={9.5}

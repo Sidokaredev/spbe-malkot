@@ -151,7 +151,11 @@ const CollapsedComponent: React.FC<{ dataCell: DynamicRowBodyData }> = ({ dataCe
   )
 }
 
-export default function DomainDataSection4() {
+export default function DomainDataSection4({
+  checkedState
+}: {
+  checkedState: { id: number, nama: string };
+}) {
   /* state */
   const [katalog, setKatalog] = useState<KatalogDataInformasiType[] | null>(null)
   const [error, setError] = useState<{ sign: boolean, message: string }>({ sign: false, message: "" })
@@ -164,9 +168,13 @@ export default function DomainDataSection4() {
   /* fetching */
   useEffect(() => {
     (async () => {
+      let pathAPI = "/api/v1/public/data"
+      if (checkedState.id !== 0) {
+        pathAPI = `${pathAPI}/opd/${checkedState.id}`
+      }
       const [data, fail] = await API<KatalogDataInformasiType[]>(
         "no-body",
-        "/api/v1/public/data",
+        pathAPI,
         {
           method: "GET",
           headers: {
@@ -182,7 +190,7 @@ export default function DomainDataSection4() {
         return setKatalog(data)
       }
     })()
-  }, [refetch])
+  }, [refetch, checkedState])
   return (
     <>
       {/* Error Alert */}

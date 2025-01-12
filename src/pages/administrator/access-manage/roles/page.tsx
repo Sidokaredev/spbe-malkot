@@ -3,7 +3,7 @@ import {
   Box,
   Button,
   Chip,
-  CircularProgress,
+  Dialog,
   IconButton,
   InputAdornment,
   Snackbar,
@@ -24,7 +24,6 @@ import {
   Add,
   Delete,
   EditNote,
-  FilterList,
   Inbox,
   Search,
 } from "@mui/icons-material";
@@ -38,6 +37,8 @@ import DeleteConfirmation from "../../../../components/Molecules/Cards/DeleteCon
 import ErrorFetchWrapper from "../../../../components/Molecules/Errors/ErrorFetchWrapper";
 import ErrorPermission from "../../../../components/Molecules/Errors/ErrorPermission";
 import DrawerFormRoleOnUpdate from "../../../../components/Organisms/access-manage/roles/DrawerFormRoleOnUpdate";
+import { ActionChipNameCreator, ActionChipStyler, PermissionNameCreator } from "../helpers";
+import BaseTable from "../../../../components/Organisms/Table";
 
 type RoleProps = {
   id: number;
@@ -73,7 +74,6 @@ export default function ManageRoles() {
   /* state */
   const [roles, setRoles] = useState<RoleProps[] | null>(null);
   const [role, setRole] = useState<RoleProps | null>(null);
-  console.log("edited role \t:", role);
   const [openDrawer, setOpenDrawer] = useState<{
     create: boolean;
     update: boolean;
@@ -91,6 +91,8 @@ export default function ManageRoles() {
     status: boolean;
     detail: string;
   }>({ status: false, detail: "" });
+  const [rolesDialog, setRoleDialog] = useState<boolean>(false)
+  const [roleOnDialog, setRoleOnDialog] = useState<{ id: number, nama: string, aksi: string }[]>([])
   /* event handler */
   const snackbarOnClose = (
     _: React.SyntheticEvent | Event,
@@ -214,18 +216,17 @@ export default function ManageRoles() {
           <TableContainer
             sx={{
               border: "1px solid " + grey[300],
-              borderRadius: "0.3em",
             }}
           >
             <Table>
-              <TableHead sx={{ backgroundColor: grey[300] }}>
+              <TableHead sx={{ backgroundColor: lightBlue[500] }}>
                 <TableRow>
                   <TableCell>
                     <Typography
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       No.
@@ -236,7 +237,7 @@ export default function ManageRoles() {
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       Role
@@ -247,7 +248,7 @@ export default function ManageRoles() {
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       Deskripsi
@@ -256,7 +257,7 @@ export default function ManageRoles() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       Akses
                     </Typography>
@@ -264,7 +265,7 @@ export default function ManageRoles() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       Options
                     </Typography>
@@ -283,34 +284,48 @@ export default function ManageRoles() {
                           },
                         }}
                       >
-                        <TableCell size="small">
-                          <Typography variant="caption">{index + 1}</Typography>
+                        <TableCell size="small"
+                          sx={{
+                            width: "5%",
+                          }}
+                        >
+                          <Typography variant="caption">{index + 1 + "."}</Typography>
                         </TableCell>
-                        <TableCell size="small">
+                        <TableCell size="small"
+                          sx={{
+                            width: "20%"
+                          }}
+                        >
                           <Typography
                             component={"div"}
                             variant="caption"
                             sx={{
-                              fontWeight: 550,
                               color: grey[700],
                             }}
                           >
                             {role.nama}
                           </Typography>
                         </TableCell>
-                        <TableCell size="small">
+                        <TableCell size="small"
+                          sx={{
+                            width: "30%"
+                          }}
+                        >
                           <Typography
                             component={"div"}
                             variant="caption"
                             sx={{
-                              fontWeight: 550,
                               color: grey[700],
                             }}
                           >
                             {role.deskripsi}
                           </Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell size="small"
+                          sx={{
+                            width: "20%"
+                          }}
+                        >
                           <Box
                             sx={{
                               maxWidth: "10em",
@@ -319,22 +334,54 @@ export default function ManageRoles() {
                               gap: "0.3em 0.5em",
                             }}
                           >
-                            {role.akses.map((akses, index) => (
-                              <Chip
-                                key={index}
-                                label={akses.nama}
-                                variant="outlined"
-                                size="small"
+                            {role.akses.map((akses, index) => {
+                              if (index > 2) {
+                                return
+                              }
+                              return (
+                                <Box key={index} component={"div"}>
+                                  <Tooltip title={ActionChipNameCreator(akses.aksi)} placement="right">
+                                    <Chip
+                                      label={PermissionNameCreator(akses.nama)}
+                                      variant="outlined"
+                                      size="small"
+                                      sx={{
+                                        backgroundColor: lightBlue[50],
+                                        color: lightBlue[700],
+                                        borderColor: lightBlue[400],
+                                      }}
+                                    />
+                                  </Tooltip>
+                                </Box>
+                              )
+                            })}
+                            {role.akses.length > 3 && (
+                              <Typography
+                                component={"p"}
+                                variant="caption"
                                 sx={{
-                                  backgroundColor: lightBlue[50],
-                                  color: lightBlue[700],
-                                  borderColor: lightBlue[400],
+                                  color: grey[600],
+                                  fontStyle: "italic",
+                                  cursor: "pointer",
+                                  ":hover": {
+                                    color: lightBlue[800]
+                                  }
                                 }}
-                              />
-                            ))}
+                                onClick={() => {
+                                  setRoleOnDialog(role.akses)
+                                  setRoleDialog(true)
+                                }}
+                              >
+                                Selengkapnya ...
+                              </Typography>
+                            )}
                           </Box>
                         </TableCell>
-                        <TableCell size="small">
+                        <TableCell size="small"
+                          sx={{
+                            width: "10%"
+                          }}
+                        >
                           <Tooltip title="Edit" placement="left">
                             <IconButton
                               size="small"
@@ -404,13 +451,57 @@ export default function ManageRoles() {
             <TablePagination
               component={"div"}
               count={5}
-              onPageChange={(_: React.MouseEvent | null, __: number) => {}}
+              onPageChange={(_: React.MouseEvent | null, __: number) => { }}
               page={0}
               rowsPerPage={5}
               rowsPerPageOptions={[5]}
             />
           </TableContainer>
         </ErrorFetchWrapper>
+        {/* Role Details */}
+        <Dialog
+          open={rolesDialog}
+          onClose={() => {
+            setRoleDialog(false)
+          }}
+          maxWidth={"sm"}
+          PaperProps={{
+            sx: {
+              padding: "0.5em"
+            }
+          }}
+          fullWidth
+        >
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nama Akses</TableCell>
+                  <TableCell>Aksi</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {roleOnDialog.map((akses, index) => {
+                  return (
+                    <TableRow
+                      key={index}
+                    >
+                      <TableCell>{PermissionNameCreator(akses.nama)}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={ActionChipNameCreator(akses.aksi)}
+                          variant="outlined"
+                          size="small"
+                          sx={ActionChipStyler(akses.aksi)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Dialog>
         {/* Delete Confirmation */}
         {onDelete.status && (
           <DeleteConfirmation

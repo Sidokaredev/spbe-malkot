@@ -45,13 +45,13 @@ function CreateDynamicRoute(props: DynamicRouteProps): RouteObject[] {
           : props.preventLoaderList &&
             props.loader &&
             !props.preventLoaderList.includes(RoutePath)
-          ? props.loader
-          : !props.preventLoaderList && props.loader
-          ? props.loader
-          : undefined,
+            ? props.loader
+            : !props.preventLoaderList && props.loader
+              ? props.loader
+              : undefined,
     };
   });
   return Routes;
-}
+};
 
 export { CreateDynamicRoute };

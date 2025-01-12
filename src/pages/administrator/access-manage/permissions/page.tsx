@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import DashboardAdminLayout from "../../../../templates/DashboardAdminLayout";
 import { Add, Delete, EditNote, Inbox, Search } from "@mui/icons-material";
-import { blueGrey, grey } from "@mui/material/colors";
+import { blueGrey, grey, lightBlue } from "@mui/material/colors";
 import TableBodySkeleton from "../../../../components/Skeletons/TableBodySkeleton";
 import React, { useEffect, useState } from "react";
 import MenuPermissionOnCreate from "../../../../components/Organisms/access-manage/permissions/MenuPermissionOnCreate";
@@ -209,18 +209,17 @@ export default function ManagePermissions() {
           <TableContainer
             sx={{
               border: "1px solid " + grey[300],
-              borderRadius: "0.3em",
             }}
           >
             <Table>
-              <TableHead sx={{ backgroundColor: grey[300] }}>
+              <TableHead sx={{ backgroundColor: lightBlue[500] }}>
                 <TableRow>
                   <TableCell>
                     <Typography
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       No.
@@ -231,7 +230,7 @@ export default function ManagePermissions() {
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       Hak Akses
@@ -242,7 +241,7 @@ export default function ManagePermissions() {
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       Deskripsi
@@ -251,7 +250,7 @@ export default function ManagePermissions() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       Aksi
                     </Typography>
@@ -259,7 +258,7 @@ export default function ManagePermissions() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       Options
                     </Typography>
@@ -279,14 +278,14 @@ export default function ManagePermissions() {
                         }}
                       >
                         <TableCell size="small">
-                          <Typography variant="caption">{index + 1}</Typography>
+                          <Typography variant="caption">{index + 1 + "."}</Typography>
                         </TableCell>
                         <TableCell size="small">
                           <Typography
                             component={"div"}
                             variant="caption"
                             sx={{
-                              fontWeight: 550,
+                              // fontWeight: 550,
                               color: grey[700],
                             }}
                           >
@@ -298,7 +297,7 @@ export default function ManagePermissions() {
                             component={"div"}
                             variant="caption"
                             sx={{
-                              fontWeight: 550,
+                              // fontWeight: 550,
                               color: grey[700],
                             }}
                           >
@@ -399,7 +398,7 @@ export default function ManagePermissions() {
             <TablePagination
               component={"div"}
               count={5}
-              onPageChange={(_: React.MouseEvent | null, __: number) => {}}
+              onPageChange={(_: React.MouseEvent | null, __: number) => { }}
               page={0}
               rowsPerPage={5}
               rowsPerPageOptions={[5]}

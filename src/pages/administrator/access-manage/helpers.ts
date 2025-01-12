@@ -67,8 +67,10 @@ const PermissionNameCreator = (permissionName: string): string => {
       return "Level 2";
     case "refrensi detail":
       return "Level 3";
+    // case "refrensi pengguna":
+    //   return "Referensi Pengguna";
     case "refrensi pengguna":
-      return "Referensi Pengguna";
+      return "Level 4";
     case "user":
       return "User";
     case "hak akses":

@@ -193,11 +193,10 @@ export default function ManageUsers() {
           <TableContainer
             sx={{
               border: "1px solid " + grey[300],
-              borderRadius: "0.3em",
             }}
           >
             <Table>
-              <TableHead sx={{ backgroundColor: grey[300] }}>
+              <TableHead sx={{ backgroundColor: lightBlue[500] }}>
                 <TableRow>
                   <TableCell>
                     <Box>
@@ -209,7 +208,7 @@ export default function ManageUsers() {
                         variant="caption"
                         sx={{
                           fontWeight: 550,
-                          color: grey[700],
+                          color: "white",
                           marginLeft: "0.5em",
                         }}
                       >
@@ -227,7 +226,7 @@ export default function ManageUsers() {
                         variant="caption"
                         sx={{
                           fontWeight: 550,
-                          color: grey[700],
+                          color: "white",
                           marginLeft: "0.5em",
                         }}
                       >
@@ -238,7 +237,7 @@ export default function ManageUsers() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       Instansi
                     </Typography>
@@ -246,7 +245,7 @@ export default function ManageUsers() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       Role
                     </Typography>
@@ -254,7 +253,7 @@ export default function ManageUsers() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       No. Telepon
                     </Typography>
@@ -262,7 +261,7 @@ export default function ManageUsers() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       Options
                     </Typography>
@@ -281,10 +280,18 @@ export default function ManageUsers() {
                           },
                         }}
                       >
-                        <TableCell size="small">
-                          <Typography variant="caption">{index + 1}</Typography>
+                        <TableCell size="small"
+                          sx={{
+                            width: "5%"
+                          }}
+                        >
+                          <Typography variant="caption">{index + 1 + "."}</Typography>
                         </TableCell>
-                        <TableCell size="small">
+                        <TableCell size="small"
+                          sx={{
+                            width: "25%"
+                          }}
+                        >
                           <Box sx={{ display: "flex", alignItems: "start" }}>
                             <Box sx={{ marginLeft: "0.5em" }}>
                               <Typography
@@ -303,12 +310,20 @@ export default function ManageUsers() {
                             </Box>
                           </Box>
                         </TableCell>
-                        <TableCell size="small">
+                        <TableCell size="small"
+                          sx={{
+                            width: "20%"
+                          }}
+                        >
                           <Typography variant="caption">
                             {user.instansi}
                           </Typography>
                         </TableCell>
-                        <TableCell size="small">
+                        <TableCell size="small"
+                          sx={{
+                            width: "25%"
+                          }}
+                        >
                           <Box
                             sx={{
                               maxWidth: "10em",
@@ -362,13 +377,13 @@ export default function ManageUsers() {
                                   },
                                 });
                               }}
-                              // onClick={deletePengguna(
-                              //   user.id,
-                              //   `${user.nama}#${user.username}`
-                              // )}
-                              // disabled={Boolean(
-                              //   loading[`${user.nama}#${user.username}`]
-                              // )}
+                            // onClick={deletePengguna(
+                            //   user.id,
+                            //   `${user.nama}#${user.username}`
+                            // )}
+                            // disabled={Boolean(
+                            //   loading[`${user.nama}#${user.username}`]
+                            // )}
                             >
                               <Delete fontSize="small" />
                             </IconButton>
@@ -413,7 +428,7 @@ export default function ManageUsers() {
             <TablePagination
               component={"div"}
               count={5}
-              onPageChange={(_: React.MouseEvent | null, __: number) => {}}
+              onPageChange={(_: React.MouseEvent | null, __: number) => { }}
               page={0}
               rowsPerPage={5}
               rowsPerPageOptions={[5]}

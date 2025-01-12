@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import DashboardAdminLayout from "../../../../templates/DashboardAdminLayout";
 import { Add, Delete, EditNote, Inbox, Search } from "@mui/icons-material";
-import { blueGrey, grey } from "@mui/material/colors";
+import { blueGrey, grey, lightBlue } from "@mui/material/colors";
 import TableBodySkeleton from "../../../../components/Skeletons/TableBodySkeleton";
 import React, { useEffect, useState } from "react";
 import { Fetcher } from "../../../../services/request-helpers";
@@ -193,18 +193,17 @@ export default function ManageGoverments() {
           <TableContainer
             sx={{
               border: "1px solid " + grey[300],
-              borderRadius: "0.3em",
             }}
           >
             <Table>
-              <TableHead sx={{ backgroundColor: grey[300] }}>
+              <TableHead sx={{ backgroundColor: lightBlue[500] }}>
                 <TableRow>
                   <TableCell>
                     <Typography
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       No.
@@ -215,7 +214,7 @@ export default function ManageGoverments() {
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       Nama
@@ -226,7 +225,7 @@ export default function ManageGoverments() {
                       variant="caption"
                       sx={{
                         fontWeight: 550,
-                        color: grey[700],
+                        color: "white",
                       }}
                     >
                       Deskripsi
@@ -235,7 +234,7 @@ export default function ManageGoverments() {
                   <TableCell>
                     <Typography
                       variant="caption"
-                      sx={{ fontWeight: 550, color: grey[700] }}
+                      sx={{ fontWeight: 550, color: "white" }}
                     >
                       Options
                     </Typography>
@@ -262,19 +261,21 @@ export default function ManageGoverments() {
                             component={"div"}
                             variant="caption"
                             sx={{
-                              fontWeight: 550,
                               color: grey[700],
                             }}
                           >
                             {goverment.nama}
                           </Typography>
                         </TableCell>
-                        <TableCell size="small">
+                        <TableCell size="small"
+                          sx={{
+                            width: "60%"
+                          }}
+                        >
                           <Typography
                             component={"div"}
                             variant="caption"
                             sx={{
-                              fontWeight: 550,
                               color: grey[700],
                             }}
                           >
@@ -314,10 +315,10 @@ export default function ManageGoverments() {
                                   },
                                 });
                               }}
-                              // onClick={deleteSingleItem(
-                              //   goverment.id,
-                              //   `${goverment.id}#${goverment.nama}`
-                              // )}
+                            // onClick={deleteSingleItem(
+                            //   goverment.id,
+                            //   `${goverment.id}#${goverment.nama}`
+                            // )}
                             >
                               <Delete fontSize="small" />
                             </IconButton>
@@ -360,7 +361,7 @@ export default function ManageGoverments() {
             <TablePagination
               component={"div"}
               count={5}
-              onPageChange={(_: React.MouseEvent | null, __: number) => {}}
+              onPageChange={(_: React.MouseEvent | null, __: number) => { }}
               page={0}
               rowsPerPage={5}
               rowsPerPageOptions={[5]}

@@ -1,4 +1,5 @@
 import {
+  Box,
   Collapse,
   SxProps,
   Table,
@@ -43,6 +44,19 @@ function CollapsedComponentWrapper(
   )
 }
 
+function ActionComponentWrapper(
+  Component: React.FC<{
+    dataCell: DynamicRowBodyData,
+    handlerFunc: Record<string, (data: DynamicRowBodyData) => () => Promise<void>>
+  }>,
+  dataCell: DynamicRowBodyData,
+  actionHandlers: Record<string, (data: DynamicRowBodyData) => () => Promise<void>>
+) {
+  return (
+    <Component dataCell={dataCell} handlerFunc={actionHandlers} />
+  )
+}
+
 type BaseTableType = {
   row_head_cells: string[];
   row_head_color?: string;
@@ -63,8 +77,12 @@ type BaseTableType = {
   disable_display_keys?: string[];
   cells_width?: Record<string, SxProps>;
   skeleton?: React.ReactNode;
-  ActionCellComponent?: React.FC<{ dataCell: DynamicRowBodyData, handlerFunc: Record<string, (data: DynamicRowBodyData) => () => void> }>;
-  actionHandlers?: Record<string, (data: DynamicRowBodyData) => () => void>;
+  useAction?: boolean;
+  ActionComponent?: React.FC<{
+    dataCell: DynamicRowBodyData,
+    handlerFunc: Record<string, (data: DynamicRowBodyData) => () => Promise<void>>
+  }>;
+  actionHandlers?: Record<string, (data: DynamicRowBodyData) => () => Promise<void>>;
   useCollapse?: boolean;
   CollapseTriggerButton?: React.FC<{
     indexOfRow: number,
@@ -97,6 +115,9 @@ export default function BaseTable({
   useCollapse,
   CollapseTriggerButton,
   CollapsedComponent,
+  useAction,
+  ActionComponent,
+  actionHandlers
 }: BaseTableType) {
   /* state */
   const [collapse, setCollapse] = useState<Record<number, boolean>>({})
@@ -240,12 +261,18 @@ export default function BaseTable({
                             border: disable_cell_line || useCollapse ? "none" : undefined,
                           }}
                         >
-                          {CollapseTriggerButtonWrapper(
-                            CollapseTriggerButton,
-                            index_of_row,
-                            collapse,
-                            setCollapse
-                          )}
+                          <Box component={"div"} sx={{ display: "flex" }}>
+                            {CollapseTriggerButtonWrapper(
+                              CollapseTriggerButton,
+                              index_of_row,
+                              collapse,
+                              setCollapse
+                            )}
+                            {/* using action component */}
+                            {useAction && ActionComponent && actionHandlers && (
+                              ActionComponentWrapper(ActionComponent, dataCell, actionHandlers)
+                            )}
+                          </Box>
                         </TableCell>
                       )}
                     </TableRow>

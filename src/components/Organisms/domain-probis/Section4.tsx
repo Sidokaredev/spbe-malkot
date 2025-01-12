@@ -33,7 +33,6 @@ const CollapseTriggerButton: React.FC<{
 }
 
 const CollapsedComponent: React.FC<{ dataCell: DynamicRowBodyData }> = ({ dataCell }) => {
-  console.log(dataCell)
   return (
     <Box component={"div"}
       sx={{
@@ -78,7 +77,11 @@ const CollapsedComponent: React.FC<{ dataCell: DynamicRowBodyData }> = ({ dataCe
   )
 }
 
-export default function ProsesBisnisSection4() {
+export default function ProsesBisnisSection4({
+  checkedState
+}: {
+  checkedState: { id: number, nama: string };
+}) {
   /* state */
   const [katalog, setKatalog] = useState<KatalogProsesBisnisDataType[] | null>(null)
   const [error, setError] = useState<{ sign: boolean, message: string }>({
@@ -94,9 +97,13 @@ export default function ProsesBisnisSection4() {
   /* fetching */
   useEffect(() => {
     (async () => {
+      let pathAPI = "/api/v1/public/probis"
+      if (checkedState.id !== 0) {
+        pathAPI = `${pathAPI}/opd/${checkedState.id}`
+      }
       const [data, fail] = await API<KatalogProsesBisnisDataType[]>(
         "no-body",
-        "/api/v1/public/probis",
+        pathAPI,
         {
           method: "GET",
           headers: {
@@ -106,16 +113,14 @@ export default function ProsesBisnisSection4() {
       )
 
       if (fail) {
-        console.log("fail request \t:", fail)
         return setError({ sign: true, message: `katalog proses bisnis: ${fail.message}` })
       }
 
       if (data) {
-        console.log("data \t:", data)
         return setKatalog(data)
       }
     })()
-  }, [refetch])
+  }, [refetch, checkedState])
   return (
     <>
       {error.sign && (

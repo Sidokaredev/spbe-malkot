@@ -13,7 +13,7 @@ import {
   ViewColumn,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { FetcherV2 } from "../../services/request-helpers";
+import { API, FetcherV2 } from "../../services/request-helpers";
 import { useLocation } from "react-router-dom";
 import { SERVICE_HOSTNAME } from "../../services/CONFIG";
 import {
@@ -24,11 +24,20 @@ import {
 } from "../../services/api/helpers/data-transforms";
 import { lightBlue } from "@mui/material/colors";
 
+export type OPDType = {
+  id: number;
+  nama: string;
+}
+
 export default function DomainProsesBisnis() {
+  /* react-router */
   const location = useLocation();
   const ID_DOMAINPROSESBISNIS = GetReferensiArsitekturID(
     location.pathname.replace("/", "")
   );
+  /* state */
+  const [prosesBisnisOPD, setProsesBisnisOPD] = useState<OPDType[]>([])
+  const [checkedState, setCheckedState] = useState<{ id: number, nama: string }>({ id: 0, nama: "" })
   const DEFAULT_ErrorSign: { sign: boolean; message: string } = {
     sign: false,
     message: "",
@@ -77,44 +86,68 @@ export default function DomainProsesBisnis() {
       });
     })();
   }, [refetch]);
+  useEffect(() => {
+    (async () => {
+      const [data, fail] = await API<OPDType[]>(
+        "no-body",
+        "/api/v1/public/probis/opd",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      if (fail) {
+        return setErrorSign({ sign: true, message: fail.message })
+      }
+      if (data) {
+        return setProsesBisnisOPD(data)
+      }
+    })()
+  }, [])
   const itemListProbis: ItemsListType[] = [
     {
       id: "opd",
       list_label: "OPD",
-      sub_list: [
-        "Dinas Ketahanan Pangan dan Pertanian",
-        "Dinas Pengendalian Penduduk dan Keluarga Berencana",
-        "Dinas Kesehatan",
-        "Dinas Perpustakaan dan Kearsipan",
-      ],
+      sub_list: prosesBisnisOPD,
+      // sub_list: [
+      //   { id: 1, nama: "DAU" },
+      //   { id: 2, nama: "LOWOKARU" },
+      // ],
       icon: <Apartment />,
     },
-    {
-      id: "sektor_pemerintahan",
-      list_label: "Sektor Pemerintahan",
-      sub_list: [
-        "RAB.03 Pembangunan dan Kewilayahan",
-        "RAB.02 Ekonomi dan Industri",
-        "RAB.04 Perlindungan Sosial dan Kesehatan",
-        "RAB.09 Pemerintahan Umum",
-      ],
-      icon: <Layers />,
-    },
-    {
-      id: "urusan_pemerintahan",
-      list_label: "Urusan Pemerintahan",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <ViewColumn />,
-    },
-    {
-      id: "sub_urusan",
-      list_label: "Sub Urusan",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <Receipt />,
-    },
+    // {
+    //   id: "sektor_pemerintahan",
+    //   list_label: "Sektor Pemerintahan",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <Layers />,
+    // },
+    // {
+    //   id: "urusan_pemerintahan",
+    //   list_label: "Urusan Pemerintahan",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <ViewColumn />,
+    // },
+    // {
+    //   id: "sub_urusan",
+    //   list_label: "Sub Urusan",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <Receipt />,
+    // },
   ];
   return (
-    <DashboardLayout itemList={itemListProbis}>
+    <DashboardLayout
+      itemList={itemListProbis}
+      checkedState={checkedState}
+      setCheckedState={setCheckedState}
+    >
       <Box component={"div"} className="section-container">
         {errorSign.sign && (
           <Alert
@@ -149,7 +182,7 @@ export default function DomainProsesBisnis() {
             </Box>
           </Alert>
         )}
-        {/* <Box component={"section"} className="section1">
+        <Box component={"section"} className="section1">
           <ProsesBisnisSection1
             jumlah_opd_pemilik_probis={DomainProbis.card_jumlah_opd_probis}
           />
@@ -159,9 +192,9 @@ export default function DomainProsesBisnis() {
         </Box>
         <Box component={"section"} className="section3" marginTop={3}>
           <ProsesBisnisSection3 />
-        </Box> */}
+        </Box>
         <Box component={"section"} className="section4" marginTop={3}>
-          <ProsesBisnisSection4 />
+          <ProsesBisnisSection4 checkedState={checkedState} />
         </Box>
       </Box>
     </DashboardLayout>

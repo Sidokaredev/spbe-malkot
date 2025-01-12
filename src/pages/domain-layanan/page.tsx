@@ -21,9 +21,10 @@ import {
   TotalOPD,
 } from "../../services/api/helpers/data-transforms";
 import { useEffect, useState } from "react";
-import { FetcherV2 } from "../../services/request-helpers";
+import { API, FetcherV2 } from "../../services/request-helpers";
 import { SERVICE_HOSTNAME } from "../../services/CONFIG";
 import { lightBlue } from "@mui/material/colors";
+import { OPDType } from "../domain-probis/page";
 
 export default function DomainLayanan() {
   /* router hooks */
@@ -40,6 +41,8 @@ export default function DomainLayanan() {
   };
 
   /* state */
+  const [layananOPD, setLayananOPD] = useState<OPDType[]>([]);
+  const [checkedState, setCheckedState] = useState<{ id: number, nama: string }>({ id: 0, nama: "" });
   const [DomainLayanan, SET_DomainLayanan] = useState<{
     data_opd: TotalOPD[];
     data_catalog_layanan: Catalog[];
@@ -87,40 +90,64 @@ export default function DomainLayanan() {
       });
     })();
   }, [refetch]);
+  useEffect(() => {
+    (async () => {
+      const [data, fail] = await API<OPDType[]>(
+        "no-body",
+        "/api/v1/public/layanan/opd",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      if (fail) {
+        return setErrorSign({ sign: true, message: fail.message })
+      }
+      if (data) {
+        return setLayananOPD(data)
+      }
+    })()
+  }, [])
 
   const itemListLayanan: ItemsListType[] = [
     {
       id: "opd",
       list_label: "OPD",
-      sub_list: [
-        "Dinas Ketahanan Pangan dan Pertanian",
-        "Dinas Pengendalian Penduduk dan Keluarga Berencana",
-        "Dinas Kesehatan",
-        "Dinas Perpustakaan dan Kearsipan",
-      ],
+      sub_list: layananOPD,
       icon: <Apartment />,
     },
-    {
-      id: "sektor_pemerintahan",
-      list_label: "Target Layanan",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <Layers />,
-    },
-    {
-      id: "urusan_pemerintahan",
-      list_label: "Sektor Pemerintahan",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <ViewColumn />,
-    },
-    {
-      id: "sub_urusan",
-      list_label: "Urusan Pemerintahan",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <Receipt />,
-    },
+    // {
+    //   id: "sektor_pemerintahan",
+    //   list_label: "Target Layanan",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <Layers />,
+    // },
+    // {
+    //   id: "urusan_pemerintahan",
+    //   list_label: "Sektor Pemerintahan",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <ViewColumn />,
+    // },
+    // {
+    //   id: "sub_urusan",
+    //   list_label: "Urusan Pemerintahan",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <Receipt />,
+    // },
   ];
   return (
-    <DashboardLayout itemList={itemListLayanan}>
+    <DashboardLayout
+      itemList={itemListLayanan}
+      checkedState={checkedState}
+      setCheckedState={setCheckedState}>
       <Box component={"div"} className="section-container">
         {errorSign.sign && (
           <Alert
@@ -202,7 +229,7 @@ export default function DomainLayanan() {
             marginBottom: "1em",
           }}
         >
-          <DomainLayananSection5 />
+          <DomainLayananSection5 checkedState={checkedState} />
         </Box>
       </Box>
     </DashboardLayout>

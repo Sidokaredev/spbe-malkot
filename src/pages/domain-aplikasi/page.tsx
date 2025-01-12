@@ -12,10 +12,11 @@ import {
   PublicDataTransform,
   TotalOPD,
 } from "../../services/api/helpers/data-transforms";
-import { FetcherV2 } from "../../services/request-helpers";
+import { API, FetcherV2 } from "../../services/request-helpers";
 import { SERVICE_HOSTNAME } from "../../services/CONFIG";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { OPDType } from "../domain-probis/page";
 
 export default function DomainAplikasi() {
   /* router hooks */
@@ -32,6 +33,8 @@ export default function DomainAplikasi() {
   };
 
   /* state */
+  const [aplikasiOPD, setAplikasiOPD] = useState<OPDType[]>([]);
+  const [checkedState, setCheckedState] = useState<{ id: number, nama: string }>({ id: 0, nama: "" });
   const [DomainAplikasi, SET_DomainAplikasi] = useState<{
     data_opd: TotalOPD[];
     data_catalog_aplikasi: Catalog[];
@@ -76,39 +79,65 @@ export default function DomainAplikasi() {
     })();
   }, [refetch]);
 
+  useEffect(() => {
+    (async () => {
+      const [data, fail] = await API<OPDType[]>(
+        "no-body",
+        "/api/v1/public/aplikasi/opd",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      if (fail) {
+        return setErrorSign({ sign: true, message: fail.message })
+      }
+      if (data) {
+        return setAplikasiOPD(data)
+      }
+    })()
+  }, [])
+
   const itemListAplikasi: ItemsListType[] = [
     {
       id: "opd",
       list_label: "OPD",
-      sub_list: [
-        "Dinas Ketahanan Pangan dan Pertanian",
-        "Dinas Pengendalian Penduduk dan Keluarga Berencana",
-        "Dinas Kesehatan",
-        "Dinas Perpustakaan dan Kearsipan",
-      ],
+      sub_list: aplikasiOPD,
       icon: <Apartment />,
     },
-    {
-      id: "sektor_pemerintahan",
-      list_label: "Kepemilikan Aplikasi",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <Layers />,
-    },
-    {
-      id: "urusan_pemerintahan",
-      list_label: "Domain Aplikasi",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <ViewColumn />,
-    },
-    {
-      id: "sub_urusan",
-      list_label: "Area Aplikasi",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <Receipt />,
-    },
+    // {
+    //   id: "sektor_pemerintahan",
+    //   list_label: "Kepemilikan Aplikasi",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <Layers />,
+    // },
+    // {
+    //   id: "urusan_pemerintahan",
+    //   list_label: "Domain Aplikasi",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <ViewColumn />,
+    // },
+    // {
+    //   id: "sub_urusan",
+    //   list_label: "Area Aplikasi",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <Receipt />,
+    // },
   ];
   return (
-    <DashboardLayout itemList={itemListAplikasi}>
+    <DashboardLayout
+      itemList={itemListAplikasi}
+      checkedState={checkedState}
+      setCheckedState={setCheckedState}
+    >
       <Box
         component={"div"}
         className="section-container"
@@ -152,7 +181,7 @@ export default function DomainAplikasi() {
             marginBottom: "1em",
           }}
         >
-          <DomainAplikasiSection4 />
+          <DomainAplikasiSection4 checkedState={checkedState} />
         </Box>
       </Box>
     </DashboardLayout>

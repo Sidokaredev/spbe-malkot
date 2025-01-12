@@ -5,8 +5,12 @@ import { useLocation } from "react-router-dom"
 
 export default function SideBarFilter({
   itemList,
-} : {
-  itemList: ItemsListType[]
+  checkedState,
+  setCheckedState
+}: {
+  itemList: ItemsListType[];
+  checkedState: { id: number, nama: string };
+  setCheckedState: React.Dispatch<React.SetStateAction<{ id: number, nama: string }>>
 }) {
   /* Router Hooks */
   const location = useLocation()
@@ -18,19 +22,19 @@ export default function SideBarFilter({
 
       case "/domain-layanan":
         return "Domain Layanan"
-      
+
       case "/domain-data":
         return "Domain Data"
 
       case "/domain-aplikasi":
         return "Domain Aplikasi"
-      
+
       case "/aplikasi-usulan":
         return "Aplikasi Usulan"
 
       case "/peta-rencana":
         return "Peta Rencana"
-      
+
       default:
         return "Path Doesnt Match"
     }
@@ -88,7 +92,10 @@ export default function SideBarFilter({
           autoComplete="off"
         />
         {/* Filters */}
-        <ExpandableList itemList={itemList} />
+        <ExpandableList
+          itemList={itemList}
+          checkedState={checkedState}
+          setCheckedState={setCheckedState} />
       </Box>
     </>
   )

@@ -2,14 +2,18 @@ import {
   AccountTree,
   AdminPanelSettings,
   BarChart,
+  DevicesOther,
   Domain,
   GavelRounded,
   Groups,
+  InsertChart,
   LockRounded,
   ManageAccounts,
   MiscellaneousServices,
   PersonRounded,
+  Schema,
   Security,
+  ViewCarousel,
   Widgets,
 } from "@mui/icons-material";
 import {
@@ -101,7 +105,40 @@ export default function DashboardAdminLayout({
     },
   ];
 
+  const katalogItems: DrawerItemsProps[] = [
+    {
+      icon: <Schema />,
+      label: "Proses Bisnis",
+      path: "/catalog/proses-bisnis",
+    },
+    {
+      icon: <ViewCarousel />,
+      label: "Layanan",
+      path: "/catalog/layanan",
+    },
+    {
+      icon: <InsertChart />,
+      label: "Data",
+      path: "/catalog/data",
+    },
+    {
+      icon: <DevicesOther />,
+      label: "Aplikasi",
+      path: "/catalog/aplikasi",
+    },
+  ]
+
   const manajemenPenggunaItems: DrawerItemsProps[] = [
+    {
+      icon: <LockRounded />,
+      label: "Kelola Akses",
+      path: "/access-manage/permissions",
+    },
+    {
+      icon: <PersonRounded />,
+      label: "Roles",
+      path: "/access-manage/roles",
+    },
     {
       icon: <Groups />,
       label: "Kelola Pengguna",
@@ -111,16 +148,6 @@ export default function DashboardAdminLayout({
       icon: <GavelRounded />,
       label: "Instansi",
       path: "/access-manage/goverments",
-    },
-    {
-      icon: <PersonRounded />,
-      label: "Roles",
-      path: "/access-manage/roles",
-    },
-    {
-      icon: <LockRounded />,
-      label: "Kelola Akses",
-      path: "/access-manage/permissions",
     },
   ];
   /* Handler */
@@ -228,12 +255,22 @@ export default function DashboardAdminLayout({
           component={"div"}
           className="sidebar-items"
           sx={{
-            minWidth: "16em",
+            minWidth: "17em",
             // border: "1px solid black",
             height: "93vh",
             position: "sticky",
             top: (MUITheme.mixins.toolbar.minHeight as number) - 8,
-            // overflowY: "scroll",
+            overflowY: "scroll",
+            "&::-webkit-scrollbar": {
+              width: "0.7em"
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: grey[400]
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: grey[300],
+              borderRadius: "0.2em"
+            }
           }}
         >
           {/* Referensi Arsitektur */}
@@ -245,8 +282,8 @@ export default function DashboardAdminLayout({
                 sx={{
                   lineHeight: "0em",
                   marginTop: "0.5em",
-                  // border: "1px solid black",
                   paddingX: "1.7em",
+                  paddingY: "0.5em",
                 }}
               >
                 <Typography variant="caption">Referensi Arsitektur</Typography>
@@ -298,6 +335,70 @@ export default function DashboardAdminLayout({
               </ListItem>
             ))}
           </List>
+          {/* Catalog */}
+          <List
+            disablePadding
+            component={"nav"}
+            subheader={
+              <ListSubheader
+                sx={{
+                  lineHeight: "0em",
+                  marginTop: "0.5em",
+                  paddingX: "1.7em",
+                  paddingY: "0.5em"
+                }}
+              >
+                <Typography variant="caption">Katalog</Typography>
+              </ListSubheader>
+            }
+          >
+            {katalogItems.map((item, index) => {
+              return (
+                <ListItem
+                  key={index}
+                  disablePadding
+                  sx={{
+                    borderLeft: isCurrentPath(item.path)
+                      ? `0.3em solid ${lightBlue[700]}`
+                      : "0.3em solid transparent",
+                  }}
+                >
+                  <ListItemButton
+                    component={RouterLink}
+                    to={"/administrator" + item.path}
+                    sx={{
+                      color: isCurrentPath(item.path)
+                        ? lightBlue[700]
+                        : grey[600],
+                      backgroundColor: isCurrentPath(item.path)
+                        ? blue[50]
+                        : undefined,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        border: "none",
+                        paddingLeft: "0.2em",
+                        paddingRight: "0.5em",
+                        color: isCurrentPath(item.path)
+                          ? lightBlue[700]
+                          : grey[600],
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography variant="subtitle2" sx={{ fontWeight: 400 }}>
+                          {item.label}
+                        </Typography>
+                      }
+                    />
+                  </ListItemButton>
+                </ListItem>
+              )
+            })}
+          </List>
           {/* Role and Permissions */}
           <List
             disablePadding
@@ -309,6 +410,7 @@ export default function DashboardAdminLayout({
                   marginTop: "0.5em",
                   // border: "1px solid black",
                   paddingX: "1.7em",
+                  paddingY: "0.5em"
                 }}
               >
                 <Typography variant="caption">
@@ -371,7 +473,7 @@ export default function DashboardAdminLayout({
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
         open={backdropShow}
-        // onClick={handleClose}
+      // onClick={handleClose}
       >
         <CircularProgress color="inherit" />
       </Backdrop>

@@ -6,7 +6,8 @@ type TableHeadProps = {
   font_color?: string,
   use_row_number?: boolean,
   font_size?: "xx-small" | "x-small" | "small" | "medium" | "large",
-  cell_size?: "medium" | "small"
+  cell_size?: "medium" | "small",
+  cells_width?: Record<string, SxProps>;
 }
 
 export default function BaseTableHead(rowProps: TableHeadProps) {
@@ -27,7 +28,9 @@ export default function BaseTableHead(rowProps: TableHeadProps) {
       {rowProps.cells.map((cell, index) => (
         <TableCell
           key={index}
-          sx={cellStyles}
+          sx={{
+            ...cellStyles,
+          }}
         >
           {cell}
         </TableCell>

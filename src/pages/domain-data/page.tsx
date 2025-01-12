@@ -21,8 +21,9 @@ import {
 } from "../../services/api/helpers/data-transforms";
 import { useEffect, useState } from "react";
 import { SERVICE_HOSTNAME } from "../../services/CONFIG";
-import { FetcherV2 } from "../../services/request-helpers";
+import { API, FetcherV2 } from "../../services/request-helpers";
 import { lightBlue } from "@mui/material/colors";
+import { OPDType } from "../domain-probis/page";
 
 export default function DomainData() {
   /* router hooks */
@@ -39,6 +40,8 @@ export default function DomainData() {
   };
 
   /* state */
+  const [dataInformasiOPD, setDataInformasiOPD] = useState<OPDType[]>([]);
+  const [checkedState, setCheckedState] = useState<{ id: number, nama: string }>({ id: 0, nama: "" });
   const [DomainData, SET_DomainData] = useState<{
     data_opd: TotalOPD[];
     data_catalog_data: Catalog[];
@@ -83,40 +86,65 @@ export default function DomainData() {
       });
     })();
   }, [refetch]);
+  useEffect(() => {
+    (async () => {
+      const [data, fail] = await API<OPDType[]>(
+        "no-body",
+        "/api/v1/public/data/opd",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      if (fail) {
+        return setErrorSign({ sign: true, message: fail.message })
+      }
+      if (data) {
+        return setDataInformasiOPD(data)
+      }
+    })()
+  }, [])
 
   const itemListData: ItemsListType[] = [
     {
       id: "opd",
       list_label: "OPD",
-      sub_list: [
-        "Dinas Ketahanan Pangan dan Pertanian",
-        "Dinas Pengendalian Penduduk dan Keluarga Berencana",
-        "Dinas Kesehatan",
-        "Dinas Perpustakaan dan Kearsipan",
-      ],
+      sub_list: dataInformasiOPD,
       icon: <Apartment />,
     },
-    {
-      id: "sektor_pemerintahan",
-      list_label: "Validitas Data",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <Layers />,
-    },
-    {
-      id: "urusan_pemerintahan",
-      list_label: "Data Pokok",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <ViewColumn />,
-    },
-    {
-      id: "sub_urusan",
-      list_label: "Data Tematik",
-      sub_list: ["Items 1", "Items 1", "Items 1", "Items 1"],
-      icon: <Receipt />,
-    },
+    // {
+    //   id: "sektor_pemerintahan",
+    //   list_label: "Validitas Data",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <Layers />,
+    // },
+    // {
+    //   id: "urusan_pemerintahan",
+    //   list_label: "Data Pokok",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <ViewColumn />,
+    // },
+    // {
+    //   id: "sub_urusan",
+    //   list_label: "Data Tematik",
+    //   sub_list: [
+    //     { id: 0, nama: "as soon as possible" }
+    //   ],
+    //   icon: <Receipt />,
+    // },
   ];
   return (
-    <DashboardLayout itemList={itemListData}>
+    <DashboardLayout
+      itemList={itemListData}
+      checkedState={checkedState}
+      setCheckedState={setCheckedState}
+    >
       <Box component={"div"} className="section-container">
         {errorSign.sign && (
           <Alert
@@ -151,7 +179,7 @@ export default function DomainData() {
             </Box>
           </Alert>
         )}
-        {/* <Box
+        <Box
           component={"section"}
           className="domain-data-section1"
           sx={{
@@ -179,7 +207,7 @@ export default function DomainData() {
           }}
         >
           <DomainDataSection3 />
-        </Box> */}
+        </Box>
         <Box
           component={"section"}
           className="domain-data-section4"
@@ -187,7 +215,7 @@ export default function DomainData() {
             marginBottom: "1em",
           }}
         >
-          <DomainDataSection4 />
+          <DomainDataSection4 checkedState={checkedState} />
         </Box>
       </Box>
     </DashboardLayout>

@@ -162,7 +162,11 @@ const CollapsedComponent: React.FC<{ dataCell: DynamicRowBodyData }> = ({ dataCe
   )
 }
 
-export default function DomainLayananSection5() {
+export default function DomainLayananSection5({
+  checkedState
+}: {
+  checkedState: { id: number, nama: string };
+}) {
   /* state */
   const [katalog, setKatalog] = useState<KatalogLayananDataType[] | null>(null)
   const [error, setError] = useState<{ sign: boolean, message: string }>({ sign: false, message: "" })
@@ -175,9 +179,13 @@ export default function DomainLayananSection5() {
   /* fetching */
   useEffect(() => {
     (async () => {
+      let pathAPI = "/api/v1/public/layanan"
+      if (checkedState.id !== 0) {
+        pathAPI = `${pathAPI}/opd/${checkedState.id}`
+      }
       const [data, fail] = await API<KatalogLayananDataType[]>(
         "no-body",
-        "/api/v1/public/layanan",
+        pathAPI,
         {
           method: "GET",
           headers: {
@@ -193,7 +201,7 @@ export default function DomainLayananSection5() {
         return setKatalog(data)
       }
     })()
-  }, [refetch])
+  }, [refetch, checkedState])
   return (
     <>
       {/* Error Alert */}

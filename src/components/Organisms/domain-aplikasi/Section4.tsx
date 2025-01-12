@@ -152,7 +152,11 @@ const CollapsedComponent: React.FC<{ dataCell: DynamicRowBodyData }> = ({ dataCe
   )
 }
 
-export default function DomainAplikasiSection4() {
+export default function DomainAplikasiSection4({
+  checkedState
+}: {
+  checkedState: { id: number, nama: string };
+}) {
   /* state */
   const [katalog, setKatalog] = useState<KatalogAplikasiDataType[] | null>(null)
   const [error, setError] = useState<{ sign: boolean, message: string }>({ sign: false, message: "" })
@@ -165,9 +169,13 @@ export default function DomainAplikasiSection4() {
   /* fetching */
   useEffect(() => {
     (async () => {
+      let pathAPI = "/api/v1/public/aplikasi"
+      if (checkedState.id !== 0) {
+        pathAPI = `${pathAPI}/opd/${checkedState.id}`
+      }
       const [data, fail] = await API<KatalogAplikasiDataType[]>(
         "no-body",
-        "/api/v1/public/aplikasi",
+        pathAPI,
         {
           method: "GET",
           headers: {
@@ -183,7 +191,7 @@ export default function DomainAplikasiSection4() {
         return setKatalog(data)
       }
     })()
-  }, [refetch])
+  }, [refetch, checkedState])
   return (
     <>
       {/* Error Alert */}
